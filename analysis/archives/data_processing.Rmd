@@ -1,0 +1,944 @@
+---
+output:
+  workflowr::wflow_html:
+    toc: no
+    
+---
+
+<div>
+# Xenium Data Analysis (Without Xenium Ranger){.tabset .tabset-fade}
+
+## Introduction
+
+## Methods
+
+## Example data
+
+
+</div>
+
+<hr>
+
+# Overview
+
+This report documents the standard single-cell data analysis of a 10x Genomics
+Xenium 5K dataset. Sections cover data loading, quality control, normalisation,
+dimensionality reduction, clustering, differential expression, and pathway
+analysis. All outputs are written to `r params$out_dir`.
+
+!Summary table! 
+
+```{r}
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(SeuratObject)
+  library(tidyverse)
+  library(RColorBrewer)
+  library(viridis)
+  library(knitr)
+  library(kableExtra)
+
+})
+
+# if (params$run_pathway) {
+#   suppressPackageStartupMessages({
+#     library(clusterProfiler)
+#     library(enrichplot)
+#     library(org.Hs.eg.db)
+#   })
+# }
+theme_set(theme_classic(base_size = 12))
+
+```
+
+
+## Data Loading
+
+### Xenium Data Import
+
+```{r load-data}
+# load xenium data using custom script and save processed files. 
+out_dir = "../data/GSE307895_processed/"
+#meta <- GEOquery::getGEO("GSE307895")[[1]]@phenoData@data
+geo = "GSM9233671"
+dat <- load_xenium(
+  sample_id = "output-220149",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),
+  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+
+all <- dat 
+
+geo = "GSM9233670"
+dat <- load_xenium(
+  sample_id = "output-223439",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233669"
+dat <- load_xenium(
+  sample_id = "output-240679-2",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233668"
+dat <- load_xenium(
+  sample_id = "output-240679-1",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233667"
+dat <- load_xenium(
+  sample_id = "output-252499",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233666"
+dat <- load_xenium(
+  sample_id = "output-233869",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233665"
+dat <- load_xenium(
+  sample_id = "output-253109",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds")) # ISSUE?
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233664"
+dat <- load_xenium(
+  sample_id = "output-220409-2",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233663"
+dat <- load_xenium(
+  sample_id = "output-220409-1",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233662"
+dat <- load_xenium(
+  sample_id = "output-222439",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233661"
+dat <- load_xenium(
+  sample_id = "output-227129",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233660"
+dat <- load_xenium(
+  sample_id = "output-234919",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233659"
+dat <- load_xenium(
+  sample_id = "output-237329",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+geo = "GSM9233658"
+dat <- load_xenium(
+  sample_id = "output-246849",
+  data.folder = "../data/Raw_data_files",
+  mtx.dir = "cell_feature_matrix/matrix.mtx.gz",
+  barcode.dir = "cell_feature_matrix/barcodes.tsv.gz",
+  features.dir = "cell_feature_matrix/features.tsv.gz",
+  cell.data = "cells.csv.gz",
+  cell.data.barcodes = "cell_id",
+  additional_metadata = c("geo_accession" = geo,
+                          "shedding" = meta$`active hsv-2 shedding:ch1`[meta$geo_accession==geo],
+                          "follicular" = meta$`folicular phase:ch1`[meta$geo_accession==geo],
+                          "status" = meta$`hsv-2 status:ch1`[meta$geo_accession==geo],
+                          "sample_id" = meta$`patient id:ch1`[meta$geo_accession==geo], 
+                          "nugent" = meta$`nugent result:ch1`[meta$geo_accession==geo], 
+                          "nugentscore" = meta$`nugent score:ch1`[meta$geo_accession==geo], 
+                          "leuteul" = meta$`leuteul phase:ch1`[meta$geo_accession==geo]),  coordinates = c("x_centroid", "y_centroid"))
+saveRDS(dat, paste0(out_dir,geo,".rds"))
+all <- merge(all, dat, merge.dr = T)
+
+saveRDS(all, paste0(out_dir,"all.rds"))
+
+```
+
+
+```{r}
+all <- readRDS(paste0(out_dir,"all.rds"))
+FeatureScatter(all, "nCount_Xenium", "nFeature_Xenium", pt.size=2)
+table(all$geo_accession, all$nCount_Xenium<10)
+all <- subset(all, subset = nCount_Xenium > 10 & cell_area >30)
+
+d1 <- subset(all, subset = geo_accession == "GSM9233671")
+d2 <- subset(all, subset = geo_accession == "GSM9233670")
+
+process_data <- function(dat, nfeatures=300, dims=1:20, resolution= 0.3, loudly=F){
+  cat("\nNormalizing Data...\n")
+  dat <- NormalizeData(dat, verbose=loudly)
+    cat("\nFinding Variable Features...\n")
+  dat <- FindVariableFeatures(dat, nfeatures = nfeatures, verbose=loudly)
+    cat("\nScaling Data...\n")
+
+  dat <- ScaleData(dat, verbose=loudly)
+  cat("\nRunning PCA...\n")
+  dat <- RunPCA(dat, verbose=loudly)
+  cat("\nRunning UMAP...\n")
+  dat <- RunUMAP(dat, verbose=loudly, dims = dims)
+  cat("\nFinding Neighbours...\n")
+  dat <- FindNeighbors(dat, dims = dims, verbose=loudly)
+  cat("\nFinding Clusters...\n")
+  dat <- FindClusters(dat, resolution = resolution, verbose=loudly)
+  return(dat)
+}
+
+d1 <- process_data(dat = d1)
+d2 <- process_data(dat = d2)  
+
+UMAPPlot(d1, label=T)
+UMAPPlot(d2, label=T)
+
+VlnPlot(d1, "PECAM1", pt.size=0)
+
+m <- FindMarkers(d2, ident.1 = 1, only.pos=T)
+d1$ref = Idents(d1) #1 and 6 are CD3
+d2$ref = Idents(d2) #5 = CD8, 9 = CD8-T cell
+```
+
+```{r}
+d <- merge(d1,d2, merge.dr = T)
+d <- JoinLayers(d)
+d[["Xenium"]] <- split(d[["Xenium"]], f = d$geo_accession)
+
+d<-process_data(d, loudly=T)
+
+UMAPPlot(d, label=T, split.by = 'geo_accession', group.by='ref')
+
+d <- IntegrateLayers(object = d, method = RPCAIntegration, orig.reduction = "pca", new.reduction = "integrated.rpca",verbose = T)
+
+d <- JoinLayers(d)
+d<- RunUMAP(d, reduction = "integrated.rpca", dims=1:30)
+
+UMAPPlot(d, label=T, split.by = 'geo_accession', group.by='ref')
+
+```
+
+# integrate all data
+
+```{r}
+all <- readRDS("../data/GSE307895_processed/all.rds")
+all <- subset(all, subset = nCount_Xenium > 10 & cell_area >30)
+
+all <- JoinLayers(all)
+all[["Xenium"]] <- split(all[["Xenium"]], f = all$geo_accession)
+all <- NormalizeData(all, verbose=F)
+all <- FindVariableFeatures(all, nfeatures = 300, verbose=F)
+
+all <- ScaleData(all, verbose=F)
+all <- RunPCA(all, verbose=F)
+
+all <- IntegrateLayers(object = all, method = RPCAIntegration, orig.reduction = "pca", new.reduction = "integrated.rpca",verbose = T)
+
+all <- JoinLayers(all)
+all<- RunUMAP(all, reduction = "integrated.rpca", dims=1:30)
+
+all <- FindNeighbors(all, dims=1:30, reduction = "integrated.rpca")
+all <- FindClusters(all, resolution = 0.4)
+
+UMAPPlot(all, label=T)+FeaturePlot(all, "CD8A")
+saveRDS(all, "../data/GSE307895_processed/all_int.rds")
+```
+
+
+```{r}
+DotPlot(all, c( "CD8A", "EPCAM"))+coord_flip()+RotatedAxis()
+```
+
+
+```{r}
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 36), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_per, fill = nugent))+geom_boxplot()+ggtitle("Treg (36)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 29), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_per, fill = nugent))+geom_boxplot()+ggtitle("Treg (29)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 16), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_per, fill = nugent))+geom_boxplot()+ggtitle("Treg (16)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 36), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_dens, fill = nugent))+geom_boxplot()+theme(axis.text.y = element_blank())+ggtitle("Treg (36)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 29), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_dens, fill = nugent))+geom_boxplot()+theme(axis.text.y = element_blank())+ggtitle("Treg (29)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 16), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_dens, fill = nugent))+geom_boxplot()+theme(axis.text.y = element_blank())+ggtitle("Treg (16)")
+
+FetchData(all, c("geo_accession","nugentscore" ,"nugent", "leuteul", "status", "ident", "cell_area")) %>% group_by(geo_accession) %>% mutate(cells = n(), Treg = sum(ident == 3), Treg_per = 100*(Treg/cells), Treg_dens = Treg/sum(cell_area)) %>% 
+  summarise(Treg_per = mean(Treg_per), 
+            Treg_dens = mean(Treg_dens), 
+            status = unique(status), 
+            nugentscore = unique(nugentscore), 
+            leuteal = unique(leuteul),
+            nugent = unique(nugent)) %>% mutate(nugent = ifelse(nugent == "bacterial vaginosis", "BV", "Normal"), nugent = factor(nugent, levels=c("Normal", "BV"))) %>% 
+  #ggplot(aes(Treg_per, as.numeric(nugentscore)))+geom_smooth(method='lm')
+  #ggplot(aes(status, Treg_per))+geom_boxplot()
+  ggplot(aes(status, Treg_dens, fill=nugent))+geom_boxplot()+theme(axis.text.y = element_blank())+ggtitle("CD8 (3)")
+```
+
+## lisaClust
+
+```{r}
+all2 = all %>% FetchData(c("x_centroid", "y_centroid", "orig.ident", "ident")) %>%
+  rename(all_of(c(x = "x_centroid", y = "y_centroid", imageID = "orig.ident", cellType = "ident"))) %>%
+  lisaClust(., k=5)
+
+all$region = all2$region
+all %>% FetchData(c("x_centroid", "y_centroid", "region", "geo_accession", "COL17A1")) %>%
+  filter(geo_accession == "GSM9233671") %>%
+  ggplot(aes(x_centroid, y_centroid, color = region)) +geom_point()
+
+
+all %>% FetchData(c("x_centroid", "y_centroid", "region", "geo_accession", "status")) %>%
+  group_by(geo_accession) %>%
+  mutate(total_cells = n()) %>%
+  group_by(geo_accession, region) %>% 
+  mutate(region_per = 100*(n()/total_cells)) %>%
+  summarise(region_per = mean(region_per), status=unique(status)) %>%
+    group_by(status, region) %>%
+    summarise(region_per = mean(region_per)) %>%
+  ggplot(aes(status, region_per, fill=region))+geom_col()+
+  #facet_wrap(~status, scales="free")+
+  RotatedAxis()
+```
+
+## spatially variable genes
+
+```{r}
+library(nnSVG)
+m <- all@assays$Xenium@layers$data[,all$geo_accession == "GSM9233671"]
+rownames(m) <- rownames(all); colnames(m) <- colnames(all)[all$geo_accession == "GSM9233671"]
+all2 <- nnSVG(input = m, 
+      spatial_coords = data.frame(`x` = all$x_centroid[all$geo_accession == "GSM9233671"], `y` = all$y_centroid[all$geo_accession == "GSM9233671"], row.names = colnames(all)[all$geo_accession == "GSM9233671"]))
+```
+
+
+
+
+
+
+### Add Compartment metadata
+
+```{r}
+tissue <- raster::raster("../data/test_mask.tif")# test region of the first sample acquired above. To now go make a 
+
+coord = FetchData(dat, c("x_centroid", "y_centroid"))/0.2125
+coords <- coord
+coordinates(coord) <- ~x_centroid+y_centroid
+
+dat <- AddMetaData(dat, 
+                   metadata=na.omit(data.frame(tissue = raster::extract(tissue, coord), 
+                   row.names = rownames(coords))))
+FeaturePlot(dat,"tissue", reduction = "coordinates")
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+### Data Summary
+
+```{r data-summary}
+cat("Cells:      ", ncol(xen), "\n")
+cat("Genes:      ", nrow(xen), "\n")
+cat("Median transcripts per cell:", median(xen$nCount_Xenium), "\n")
+```
+
+
+## Quality Control
+
+### QC Metric Distributions
+
+```{r qc-metrics}
+# Violin plots of key QC metrics
+VlnPlot(
+  xen,
+  features  = c("nCount_Xenium", "nFeature_Xenium"),
+  ncol      = 2,
+  pt.size   = 0
+)
+```
+
+### Spatial QC Overview
+
+```{r qc-spatial}
+# Spatial scatter of transcript counts
+ImageFeaturePlot(xen, features = "nCount_Xenium")
+```
+
+### Cell Area Distribution
+
+```{r qc-area}
+# Requires area_um2 in metadata
+# ggplot(xen@meta.data, aes(x = area_um2)) +
+#   geom_histogram(bins = 100, fill = "steelblue") +
+#   geom_vline(xintercept = c(params$min_area_um2, params$max_area_um2),
+#              linetype = "dashed", colour = "red") +
+#   labs(x = "Cell area (µm²)", y = "Count", title = "Cell area distribution")
+```
+
+### Filtering
+
+```{r qc-filter}
+cells_before <- ncol(xen)
+
+xen <- subset(
+  xen,
+  nCount_Xenium >= params$min_transcripts
+  # & area_um2 >= params$min_area_um2
+  # & area_um2 <= params$max_area_um2
+)
+
+cells_after <- ncol(xen)
+
+cat(sprintf("Cells before filtering: %d\nCells after filtering:  %d\nRemoved: %d (%.1f%%)\n",
+  cells_before, cells_after,
+  cells_before - cells_after,
+  100 * (cells_before - cells_after) / cells_before))
+```
+
+---
+
+## Normalisation & Scaling
+
+Xenium 5K panels are targeted assays with a limited, curated gene set. Based on
+benchmarking evidence (e.g. Dannenfelser et al. 2024, *Nature Methods*), standard
+log-normalisation followed by scaling outperforms SCTransform for targeted spatial
+panels and is the recommended approach here.
+
+```{r normalise}
+xen <- NormalizeData(xen, normalization.method = "LogNormalize", scale.factor = 10000)
+xen <- ScaleData(xen, features = rownames(xen))
+```
+
+---
+
+## Dimensionality Reduction
+
+### PCA
+
+```{r pca}
+xen <- RunPCA(xen, npcs = params$n_pcs, verbose = FALSE)
+
+ElbowPlot(xen, ndims = params$n_pcs) +
+  ggtitle("Elbow plot — select number of PCs")
+```
+
+### UMAP
+
+```{r umap}
+xen <- RunUMAP(xen, dims = 1:params$n_pcs, verbose = FALSE)
+
+DimPlot(xen, reduction = "umap", label = FALSE) +
+  ggtitle("UMAP — all cells")
+```
+
+### t-SNE
+
+```{r tsne}
+xen <- RunTSNE(xen, dims = 1:params$n_pcs, verbose = FALSE)
+
+DimPlot(xen, reduction = "tsne", label = FALSE) +
+  ggtitle("t-SNE — all cells")
+```
+
+---
+
+## Clustering
+
+```{r cluster}
+xen <- FindNeighbors(xen, dims = 1:params$n_pcs, k.param = params$n_neighbours)
+xen <- FindClusters(xen, resolution = params$resolution)
+
+cat("Clusters identified:", nlevels(xen$seurat_clusters), "\n")
+table(xen$seurat_clusters)
+```
+
+### Cluster Visualisation
+
+```{r cluster-plots}
+p_umap  <- DimPlot(xen, reduction = "umap",  label = TRUE, repel = TRUE) + NoLegend()
+p_tsne  <- DimPlot(xen, reduction = "tsne",  label = TRUE, repel = TRUE) + NoLegend()
+p_pca   <- DimPlot(xen, reduction = "pca",   label = TRUE, repel = TRUE) + NoLegend()
+p_space <- ImageDimPlot(xen, fov = "fov", cols = "polychrome", size = 0.5)
+
+(p_umap | p_tsne) / (p_pca | p_space)
+```
+
+### Cluster Size Summary
+
+```{r cluster-summary}
+xen@meta.data %>%
+  count(seurat_clusters, name = "n_cells") %>%
+  mutate(pct = round(100 * n_cells / sum(n_cells), 1)) %>%
+  kable(caption = "Cells per cluster") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+---
+
+## Differential Expression
+
+### Cluster Marker Discovery
+
+```{r markers, cache=TRUE}
+all_markers <- FindAllMarkers(
+  xen,
+  only.pos      = TRUE,
+  min.pct       = 0.1,
+  logfc.threshold = 0.25,
+  test.use      = "wilcox"
+)
+
+# Save full marker table
+write_csv(all_markers,
+  file.path(params$out_dir, "tables", "all_cluster_markers.csv"))
+
+# Preview top 5 per cluster
+all_markers %>%
+  group_by(cluster) %>%
+  slice_max(avg_log2FC, n = 5) %>%
+  kable(caption = "Top 5 markers per cluster (avg_log2FC)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### Top Marker Heatmap
+
+```{r de-heatmap}
+top_markers <- all_markers %>%
+  group_by(cluster) %>%
+  slice_max(avg_log2FC, n = 5) %>%
+  pull(gene)
+
+DoHeatmap(
+  xen,
+  features = unique(top_markers),
+  group.by = "seurat_clusters"
+) + NoLegend()
+```
+
+### Spatial Marker Overlay
+
+```{r spatial-markers}
+# Plot top marker for each of the first 4 clusters
+top4 <- all_markers %>%
+  group_by(cluster) %>%
+  slice_max(avg_log2FC, n = 1) %>%
+  ungroup() %>%
+  slice(1:4) %>%
+  pull(gene)
+
+ImageFeaturePlot(xen, features = top4, ncol = 2)
+```
+
+### Excel Output — All Markers
+
+```{r de-excel}
+wb <- createWorkbook()
+
+for (cl in sort(unique(all_markers$cluster))) {
+  addWorksheet(wb, sheetName = paste0("Cluster_", cl))
+  writeData(wb,
+    sheet = paste0("Cluster_", cl),
+    x     = filter(all_markers, cluster == cl))
+}
+
+saveWorkbook(wb,
+  file      = file.path(params$out_dir, "tables", "cluster_markers.xlsx"),
+  overwrite = TRUE)
+
+cat("Marker Excel written to:", file.path(params$out_dir, "tables", "cluster_markers.xlsx"))
+```
+
+---
+
+## Pathway Analysis
+
+```{r pathway-check, eval=params$run_pathway}
+# This section runs only when params$run_pathway == TRUE
+```
+
+### Gene Set Enrichment per Cluster
+
+```{r pathway-gsea, eval=params$run_pathway}
+# Convert gene symbols to Entrez IDs and run enrichment per cluster.
+# Swap org.Hs.eg.db -> org.Mm.eg.db for mouse data.
+
+pathway_results <- lapply(sort(unique(all_markers$cluster)), function(cl) {
+
+  genes <- all_markers %>%
+    filter(cluster == cl, p_val_adj < 0.05) %>%
+    pull(gene)
+
+  entrez <- bitr(genes,
+    fromType = "SYMBOL",
+    toType   = "ENTREZID",
+    OrgDb    = org.Hs.eg.db)$ENTREZID
+
+  if (length(entrez) < 5) return(NULL)
+
+  if (params$pathway_db == "GO") {
+    enrichGO(gene = entrez, OrgDb = org.Hs.eg.db,
+             ont = "BP", pAdjustMethod = "BH",
+             pvalueCutoff = 0.05, readable = TRUE)
+  } else if (params$pathway_db == "KEGG") {
+    enrichKEGG(gene = entrez, organism = "hsa",
+               pAdjustMethod = "BH", pvalueCutoff = 0.05)
+  } else if (params$pathway_db == "Reactome") {
+    # library(ReactomePA)
+    # enrichPathway(gene = entrez, organism = "human", readable = TRUE)
+    NULL
+  }
+})
+
+names(pathway_results) <- paste0("Cluster_", sort(unique(all_markers$cluster)))
+```
+
+### Pathway Dot Plots
+
+```{r pathway-plots, eval=params$run_pathway, fig.height=6}
+for (nm in names(pathway_results)) {
+  res <- pathway_results[[nm]]
+  if (!is.null(res) && nrow(res) > 0) {
+    print(
+      dotplot(res, showCategory = 15, title = nm)
+    )
+  }
+}
+```
+
+### Pathway Excel Output
+
+```{r pathway-excel, eval=params$run_pathway}
+wb_path <- createWorkbook()
+
+for (nm in names(pathway_results)) {
+  res <- pathway_results[[nm]]
+  if (!is.null(res) && nrow(res) > 0) {
+    addWorksheet(wb_path, sheetName = nm)
+    writeData(wb_path, sheet = nm, x = as.data.frame(res))
+  }
+}
+
+saveWorkbook(wb_path,
+  file      = file.path(params$out_dir, "tables", "pathway_results.xlsx"),
+  overwrite = TRUE)
+```
+
+---
+
+## Standard Visualisation Package
+
+### Embedding Plots
+
+```{r viz-embeddings}
+DimPlot(xen, reduction = "umap",  label = TRUE, repel = TRUE) + ggtitle("UMAP") |
+DimPlot(xen, reduction = "tsne",  label = TRUE, repel = TRUE) + ggtitle("t-SNE") |
+DimPlot(xen, reduction = "pca",   label = TRUE, repel = TRUE) + ggtitle("PCA")
+```
+
+### Spatial Cluster Overlay
+
+```{r viz-spatial}
+ImageDimPlot(xen, fov = "fov", cols = "polychrome", size = 0.5) +
+  ggtitle("Spatial cluster map")
+```
+
+### Feature Plots — Selected Markers
+
+```{r viz-features}
+# Edit gene list as appropriate
+genes_of_interest <- head(unique(top_markers), 9)
+
+FeaturePlot(xen, features = genes_of_interest, ncol = 3,
+            reduction = "umap", order = TRUE)
+```
+
+### Spatial Feature Plots — Selected Markers
+
+```{r viz-spatial-features}
+ImageFeaturePlot(xen, features = head(genes_of_interest, 4), ncol = 2)
+```
+
+### Violin Plots — Selected Markers
+
+```{r viz-violin}
+VlnPlot(xen, features = head(genes_of_interest, 6),
+        group.by = "seurat_clusters", ncol = 3, pt.size = 0)
+```
+
+---
+
+## Save Outputs
+
+```{r save-outputs}
+# Seurat object
+saveRDS(xen, file.path(params$out_dir, paste0(params$sample_id, "_seurat.rds")))
+
+# Cell metadata
+write_csv(xen@meta.data,
+  file.path(params$out_dir, "tables", "cell_metadata.csv"))
+
+# Embeddings
+lapply(c("umap", "tsne", "pca"), function(red) {
+  emb <- as.data.frame(Embeddings(xen, reduction = red))
+  emb$cell_id <- rownames(emb)
+  write_csv(emb, file.path(params$out_dir, "tables",
+    paste0(red, "_embeddings.csv")))
+})
+
+cat("All outputs written to:", params$out_dir)
+```
+
+---
+
+# Session Information
+```{r session-info}
+sessionInfo()
+```

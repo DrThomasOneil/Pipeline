@@ -1,0 +1,32 @@
+
+# Modules{.tabset .tabset-fade}
+
+Explore the modules currently available, as well as those we are developing
+
+<hr>
+
+<!---Image Processing--->
+
+## Image Processing{.tabset .tabset-fade}
+
+Image Processing involves anything
+
+<hr>
+
+###  Image preparation for cellpose segmentation.
+
+Cell segmentation often falls down. 
+
+<hr>
+<!---Tools for data wrangling--->
+
+## Tools & Data Wrangling{.tabset .tabset-fade}
+
+
+<!---Data Analysis--->
+
+## Data Analysis{.tabset .tabset-fade}
+
+
+
+

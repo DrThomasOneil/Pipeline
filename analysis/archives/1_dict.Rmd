@@ -1,0 +1,85 @@
+# Dictionary
+
+## Cell Segmentation
+
+<div>
+<img src="figs/xenium/nuclearexpansion.png" alt="Image" style="width: 1.5in; float: left; margin-right: 10px;">
+  
+**Nuclear expansion** will use a nuclear mask and just dilate out by a specific distance (e.g. 5 µm). For the most part, this works quite well, as you can see in this image that the expansion captures the marker of the second cell and would be enough to distinguish it from the other cells. This is the quickest and easiest method. 
+
+</div>
+
+However, for technology such as Xenium, where not capturing the entire cell can result in lost transcript counts, this is *not* optional. Expecially for non-T cell/rounded cells. 
+
+<hr>
+
+<div>
+
+<img src="figs/xenium/surface1.png" alt="Image" style="width: 1.5in; float: left; margin-right: 0px;">
+<img src="figs/xenium/surface2.png" alt="Image" style="width: 1.5in; float: left; margin-right: 10px;">
+
+**Nuclear and Surface** masks can be used for cell segmentation. As our images tend to be multiplexed, we don't want to just use one stain for our surface (unless we have a pan cell marker). Therefore, we take all of our relevant surface markers, normalise the expressions (so that they're all on the same scale), and average the pixel intensities across all markers, making a pan-surface marker that should capture all cell types. 
+
+This is compatible with cellpose models and is the primary workflow we use for custom cell segmentation. 
+
+</div>
+
+<hr>
+
+<div>
+
+<img src="figs/xenium/watershed.png" alt="Image" style="width: 1.5in; float: left; margin-right: 10px;">
+
+In some circumstances, a surface mask may fail to capture the full surface of a given cell (especially oddly shaped cells like myeloid cells). While **Watershed** works directly from a nuclear mask, I've found this approach most useful when applying to a 99% great mask, *<strong>just</strong> to capture some extra information*. 
+
+If you contextualise images into a 3D space, with *z-axis* being the pixel intensity, watershed works by taking these high peaks, and 'running' down until it reaches a plateau, another border, or hits a threshold. With watershedding, we ask it to start at the current border, we give it a surface mask, and allow it to extend the mask out just a little bit further. 
+
+
+```{r results='asis', echo=F}
+collapsible("**Example of watershed in practice:**", 
+            '
+![](figs/xenium/watershedeg.png)>
+
+On the left, you can see the outlines of our original cell segmentation, with some myeloid cell dendrites not being captured. After applying watershed, those masks were extended out and stopped at the end of the dendrites, meaning we are now able to capture more information about these cells. 
+
+You can then see on the right a direct outcome from this. We want to see which cells are interacting with HIV virions. By extending the mask using watershed, we were able to capture information about these cells touching HIV virions that was missed using the original mask.
+            ')
+
+```
+
+</div>
+<br>
+
+**Others to consider**:
+
+- Self-training via ilastik: Start from scratch training a model
+
+- Segmentation free: Pixel clustering to identify cells, rather than trying to draw borders.
+
+- Transcript-based segmentation: Is a more compatible method for Xenium analysis. You provide a reference dataset, and the cell segments will expand based on their profile and the surrounding transcripts. 
+
+## Image Registration
+
+**Image Registration** is required when you need to align images from two different batches and/or two different technologies. For example, aligning Xenium to subsequent immunofluorescent imaging, or aligning two acquisitions of cyclic mIF. 
+
+In this example, we had registered low resolution IMC with high resolution mIF which allowed for more accurate cell segmentation. 
+
+<img src="figs/xenium/registration.png" alt="Image" style="float: centre; ">
+
+We have python scripts, as well as hands-on imageJ instructions for registering images.
+
+
+
+# Dict
+
+## Imaging
+
+## Xenium
+
+## Visium
+
+## scRNA
+
+## bulkRNA
+
+## 

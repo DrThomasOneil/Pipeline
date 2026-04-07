@@ -1,0 +1,18 @@
+---
+title: ""
+output:
+  workflowr::wflow_html:
+    toc: no
+params:
+  month: "february"
+  zoom: 'https://uni-sydney.zoom.us/j/84164373602'
+---
+
+```{r include=F}
+func = list.files("~/Documents/GitHub/ProductivityApps/shared/data/coding_functions/root/DRSN") %>% grep("\\.r", ., value=T)
+for(i in 1:length(func)){
+  source(paste0("~/Documents/GitHub/ProductivityApps/shared/data/coding_functions/root/DRSN/",func[i]))  
+}
+```
+
+

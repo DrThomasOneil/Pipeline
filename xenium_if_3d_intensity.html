@@ -1,0 +1,333 @@
+
+<style>
+  body { margin: 0; }
+  canvas { display: block; }
+  #container { position: relative; width: 100%; }
+  #controls {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    padding: 10px 16px; font-size: 13px; color: var(--color-text-secondary);
+    border-top: 1px solid var(--color-border-tertiary);
+  }
+  #controls label { display: flex; align-items: center; gap: 6px; }
+  #controls input[type=range] { width: 100px; }
+  .ctrl-group { display: flex; align-items: center; gap: 8px; }
+  .view-btn {
+    padding: 3px 10px; border-radius: 5px; border: 1px solid var(--color-border-secondary);
+    background: var(--color-background-secondary); color: var(--color-text-primary);
+    font-size: 12px; cursor: pointer; font-family: var(--font-sans);
+  }
+  .view-btn.active { background: var(--color-text-info); color: #fff; border-color: transparent; }
+  #thresh-line { pointer-events: none; }
+</style>
+<div id="container">
+  <canvas id="c" width="680" height="400"></canvas>
+  <div id="controls">
+    <div class="ctrl-group">
+      <button class="view-btn active" id="btn3d" onclick="setView('3d')">3D surface</button>
+      <button class="view-btn" id="btn2d" onclick="setView('2d')">2D top-down</button>
+    </div>
+    <label>Threshold <input type="range" id="thresh" min="0" max="255" value="80">
+      <span id="tv">80</span></label>
+    <label>Rotate <input type="range" id="rot" min="0" max="360" value="25">
+      <span style="opacity:.6">°</span></label>
+    <label>Tilt <input type="range" id="tilt" min="10" max="85" value="42">
+      <span style="opacity:.6">°</span></label>
+    <span id="info" style="margin-left:auto;opacity:.6;font-size:12px"></span>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 680, H = 400;
+canvas.width = W; canvas.height = H;
+
+// --- Generate T cell intensity map ---
+const RES = 80;
+const grid = new Float32Array(RES * RES);
+
+function cellShape(nx, ny) {
+  // T cell: elongated body with a small protrusion (uropod)
+  const cx = 0.48, cy = 0.5;
+  const dx = nx - cx, dy = ny - cy;
+  // Main body ellipse (slightly elongated horizontally)
+  const a = 0.28, b = 0.22;
+  const bodyDist = Math.sqrt((dx/a)**2 + (dy/b)**2);
+  // Uropod – small lobe at one end
+  const ux = nx - 0.78, uy = ny - 0.5;
+  const uropodDist = Math.sqrt((ux/0.09)**2 + (uy/0.10)**2);
+  return Math.min(bodyDist, uropodDist);
+}
+
+// Build intensity: ring-bright (membrane CD3), dark interior, background noise
+for (let j = 0; j < RES; j++) {
+  for (let i = 0; i < RES; i++) {
+    const nx = i / RES, ny = j / RES;
+    const d = cellShape(nx, ny);
+    let v = 0;
+    // Membrane ring: bright at d≈1, falls off inward and outward
+    if (d < 1.35) {
+      const ring = Math.exp(-((d - 0.88)**2) / 0.018) * 230;
+      // Interior dim – cytoplasmic
+      const interior = d < 0.7 ? Math.exp(-((d)**2)/0.18) * 35 : 0;
+      v = Math.max(ring, interior);
+    }
+    // Background noise
+    v += (Math.random() * 10);
+    // Small nuclear blob (DAPI-like, but we're just using CD3 channel)
+    const nxc = nx - 0.46, nyc = ny - 0.5;
+    const nucDist = Math.sqrt(nxc**2 + nyc**2);
+    if (nucDist < 0.07) v = Math.max(v, 15 + Math.random() * 8);
+    grid[j * RES + i] = Math.min(255, Math.max(0, v));
+  }
+}
+
+// Smooth grid slightly
+const smooth = new Float32Array(RES * RES);
+for (let j = 1; j < RES-1; j++) for (let i = 1; i < RES-1; i++) {
+  smooth[j*RES+i] = (
+    grid[(j-1)*RES+i] + grid[(j+1)*RES+i] +
+    grid[j*RES+(i-1)] + grid[j*RES+(i+1)] +
+    grid[j*RES+i]*2
+  ) / 6;
+}
+
+// ---- State ----
+let view = '3d';
+let thresh = 80;
+let rotDeg = 25;
+let tiltDeg = 42;
+
+document.getElementById('thresh').addEventListener('input', e => {
+  thresh = +e.target.value;
+  document.getElementById('tv').textContent = thresh;
+  render();
+});
+document.getElementById('rot').addEventListener('input', e => { rotDeg = +e.target.value; render(); });
+document.getElementById('tilt').addEventListener('input', e => { tiltDeg = +e.target.value; render(); });
+
+function setView(v) {
+  view = v;
+  document.getElementById('btn3d').classList.toggle('active', v==='3d');
+  document.getElementById('btn2d').classList.toggle('active', v==='2d');
+  document.getElementById('rot').closest('label').style.opacity = v==='2d' ? 0.3 : 1;
+  document.getElementById('tilt').closest('label').style.opacity = v==='2d' ? 0.3 : 1;
+  render();
+}
+window.setView = setView;
+
+// ---- Color mapping ----
+function intensityColor(v, alpha=1, aboveThresh) {
+  // Below threshold: cold blue-gray, above: warm orange-to-white
+  if (aboveThresh === undefined) aboveThresh = v >= thresh;
+  if (!aboveThresh) {
+    const t = v / 255;
+    const r = Math.round(20 + t*40), g = Math.round(30 + t*50), b = Math.round(60 + t*80);
+    return `rgba(${r},${g},${b},${alpha})`;
+  } else {
+    const t = Math.min(1, (v - thresh) / (255 - thresh));
+    const r = Math.round(180 + t*75), g = Math.round(80 + t*110), b = Math.round(20 + t*20);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+}
+
+// ---- 2D top-down ----
+function draw2D() {
+  ctx.clearRect(0, 0, W, H);
+  const cellSize = Math.floor(Math.min(W, H) * 0.88 / RES);
+  const offX = Math.floor((W - cellSize * RES) / 2);
+  const offY = Math.floor((H - cellSize * RES) / 2);
+
+  for (let j = 0; j < RES; j++) {
+    for (let i = 0; i < RES; i++) {
+      const v = smooth[j*RES+i];
+      ctx.fillStyle = intensityColor(v, 1);
+      ctx.fillRect(offX + i*cellSize, offY + j*cellSize, cellSize, cellSize);
+    }
+  }
+
+  // Threshold contour (simple outline)
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,220,50,0.9)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 2]);
+  for (let j = 0; j < RES-1; j++) {
+    for (let i = 0; i < RES-1; i++) {
+      const v = smooth[j*RES+i];
+      const vr = smooth[j*RES+(i+1)];
+      const vd = smooth[(j+1)*RES+i];
+      if ((v >= thresh) !== (vr >= thresh)) {
+        ctx.beginPath();
+        ctx.moveTo(offX + (i+1)*cellSize, offY + j*cellSize);
+        ctx.lineTo(offX + (i+1)*cellSize, offY + (j+1)*cellSize);
+        ctx.stroke();
+      }
+      if ((v >= thresh) !== (vd >= thresh)) {
+        ctx.beginPath();
+        ctx.moveTo(offX + i*cellSize, offY + (j+1)*cellSize);
+        ctx.lineTo(offX + (i+1)*cellSize, offY + (j+1)*cellSize);
+        ctx.stroke();
+      }
+    }
+  }
+  ctx.restore();
+
+  // Labels
+  ctx.font = '12px var(--font-sans, sans-serif)';
+  ctx.fillStyle = 'rgba(255,220,50,0.9)';
+  ctx.fillText('— threshold boundary', offX + 2, offY + RES*cellSize + 14);
+
+  ctx.fillStyle = 'rgba(180,200,230,0.7)';
+  ctx.fillText('CD3 intensity (top-down)', offX + 2, offY - 6);
+
+  // Pixel count above threshold
+  let above = 0;
+  for (let k = 0; k < smooth.length; k++) if (smooth[k] >= thresh) above++;
+  document.getElementById('info').textContent =
+    `${above} px above threshold (${Math.round(above*100/smooth.length)}%)`;
+}
+
+// ---- 3D isometric surface ----
+function draw3D() {
+  ctx.clearRect(0, 0, W, H);
+
+  const maxH3d = 110; // max pixel height for z axis
+  const rotRad = (rotDeg * Math.PI) / 180;
+  const tiltRad = (tiltDeg * Math.PI) / 180;
+  const cosT = Math.cos(tiltRad), sinT = Math.sin(tiltRad);
+  const cosR = Math.cos(rotRad), sinR = Math.sin(rotRad);
+
+  // Project 3D point (x,y,z) in [0,1] space → canvas
+  const scale = 260;
+  const cx = W / 2 - 20, cy = H / 2 + 20;
+
+  function project(x, y, z) {
+    // x,y in [-0.5,0.5], z in [0,1]
+    const rx =  x * cosR + y * sinR;
+    const ry = -x * sinR + y * cosR;
+    const rz = z;
+    const px = rx * scale;
+    const py = -ry * cosT * scale + rz * sinT * scale * 0.9;
+    return [cx + px, cy + py];
+  }
+
+  // Draw columns back-to-front based on view angle
+  // Determine draw order
+  const iOrder = rotDeg > 90 && rotDeg < 270
+    ? Array.from({length:RES}, (_,i) => RES-1-i)
+    : Array.from({length:RES}, (_,i) => i);
+  const jOrder = (rotDeg > 180)
+    ? Array.from({length:RES}, (_,j) => RES-1-j)
+    : Array.from({length:RES}, (_,j) => j);
+
+  const zScale = maxH3d / 255;
+
+  for (const j of jOrder) {
+    for (const i of iOrder) {
+      const v = smooth[j*RES+i];
+      const nx = (i / RES) - 0.5;
+      const ny = (j / RES) - 0.5;
+      const nz = v * zScale / scale;
+      const above = v >= thresh;
+
+      const [x0, y0] = project(nx,       ny,       0);
+      const [x1, y1] = project(nx+1/RES, ny,       0);
+      const [x2, y2] = project(nx+1/RES, ny+1/RES, 0);
+      const [x3, y3] = project(nx,       ny+1/RES, 0);
+      const [tx0, ty0] = project(nx,       ny,       nz);
+      const [tx1, ty1] = project(nx+1/RES, ny,       nz);
+      const [tx2, ty2] = project(nx+1/RES, ny+1/RES, nz);
+      const [tx3, ty3] = project(nx,       ny+1/RES, nz);
+
+      // Only draw top face if nonzero
+      if (v > 3) {
+        // Front face (south)
+        ctx.beginPath();
+        ctx.moveTo(x3, y3); ctx.lineTo(x2, y2);
+        ctx.lineTo(tx2, ty2); ctx.lineTo(tx3, ty3);
+        ctx.closePath();
+        ctx.fillStyle = intensityColor(v, 0.55, above);
+        ctx.fill();
+
+        // Side face (east)
+        ctx.beginPath();
+        ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+        ctx.lineTo(tx2, ty2); ctx.lineTo(tx1, ty1);
+        ctx.closePath();
+        ctx.fillStyle = intensityColor(v, 0.45, above);
+        ctx.fill();
+      }
+
+      // Top face
+      ctx.beginPath();
+      ctx.moveTo(tx0, ty0); ctx.lineTo(tx1, ty1);
+      ctx.lineTo(tx2, ty2); ctx.lineTo(tx3, ty3);
+      ctx.closePath();
+      ctx.fillStyle = intensityColor(v, v < 5 ? 0.12 : 0.92, above);
+      ctx.fill();
+    }
+  }
+
+  // Threshold plane
+  const thZ = thresh * zScale / scale;
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = 'rgba(255,220,50,1)';
+  const [tp0x,tp0y] = project(-0.5,-0.5,thZ);
+  const [tp1x,tp1y] = project( 0.5,-0.5,thZ);
+  const [tp2x,tp2y] = project( 0.5, 0.5,thZ);
+  const [tp3x,tp3y] = project(-0.5, 0.5,thZ);
+  ctx.beginPath();
+  ctx.moveTo(tp0x,tp0y); ctx.lineTo(tp1x,tp1y);
+  ctx.lineTo(tp2x,tp2y); ctx.lineTo(tp3x,tp3y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // Threshold plane edge
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,220,50,0.85)';
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  ctx.moveTo(tp0x,tp0y); ctx.lineTo(tp1x,tp1y);
+  ctx.lineTo(tp2x,tp2y); ctx.lineTo(tp3x,tp3y);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.restore();
+
+  // Z axis arrow
+  const [az0x, az0y] = project(-0.5, -0.5, 0);
+  const [az1x, az1y] = project(-0.5, -0.5, maxH3d * 1.15 / scale);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(180,200,230,0.6)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(az0x, az0y); ctx.lineTo(az1x, az1y); ctx.stroke();
+  ctx.fillStyle = 'rgba(180,200,230,0.75)';
+  ctx.font = '11px var(--font-sans, sans-serif)';
+  ctx.fillText('Intensity (z)', az1x + 4, az1y + 4);
+  ctx.restore();
+
+  // Labels
+  ctx.font = '12px var(--font-sans, sans-serif)';
+  ctx.fillStyle = 'rgba(255,220,50,0.85)';
+  ctx.fillText('— threshold plane', 20, H - 20);
+  ctx.fillStyle = 'rgba(220,120,50,0.85)';
+  ctx.fillText('■ above threshold', 150, H - 20);
+  ctx.fillStyle = 'rgba(60,80,130,0.85)';
+  ctx.fillText('■ below threshold', 300, H - 20);
+  ctx.fillStyle = 'rgba(180,200,230,0.6)';
+  ctx.fillText('CD3 membrane signal — T cell', 20, 20);
+
+  let above = 0;
+  for (let k = 0; k < smooth.length; k++) if (smooth[k] >= thresh) above++;
+  document.getElementById('info').textContent =
+    `${above} px above threshold (${Math.round(above*100/smooth.length)}%)`;
+}
+
+function render() {
+  if (view === '2d') draw2D(); else draw3D();
+}
+
+render();
+</script>

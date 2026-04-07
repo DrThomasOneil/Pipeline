@@ -1,0 +1,114 @@
+
+
+<div style="text-align: left;">
+  <img src="assets/logo/DRSN_logo_smaller.png" alt="Image" style="width: 2in; float: left; margin-right: 10px;">
+  <div style="overflow: hidden; padding-top: 8%;">
+
+## **Xenium Analysis Pipeline**    
+<br>
+<hr>
+</div> 
+<br>
+
+## 
+
+This page documents the progress of the pipeline for 10x Genomics Xenium <i>in-situ</i> transcriptomics data. It covers the full workflow from raw Xenium Ranger output through to differential expression and spatial analysis. Each module defines its inputs, outputs, and key decision points. A dictionary section covers steps that require contextual reasoning rather than fixed execution.
+
+## Technology Readiness Levels
+
+```{r trl-table, echo=FALSE, message=FALSE, warning=F}
+library(knitr)
+library(kableExtra)
+
+trl <- data.frame(
+  TRL = 7:0,
+  Description = c(
+    "Pipeline is Scientific Platforms compatible",
+    "Old data run through whole pipeline; details documented and pipeline revisited",
+    "Integrate into a FAIR framework",
+    "Revised pipeline validated on 2-3 old or new datasets",
+    "Old data run through whole pipeline; details documented and pipeline revisited",
+    "Pipeline designed and fully detailed; draft code per module developed",
+    "Code repository available; broad pipeline described",
+    "No established code base"
+  ),
+  Actions = c(
+    "Independently deployable on 3 new projects; training and education materials developed; pipeline handed off; core facility ready; cost-recovery metadata collected",
+    "Reproduce known biological results on benchmark/public dataset; marker gene or cell type recovery meets defined threshold",
+    "Reproducible report designed; balances efficient outputs with interpretability; meets expectations for data sharing and transparency",
+    "Predict and document failure points (predictability is a feature, not a bug); communications developed for user-facing handoff",
+    "Use available data; run through pipeline; identify and document failure points; inform pipeline design changes; code instructions developed",
+    "Complete first draft overview pipeline with detailed pages; describe touch points and input/output; Brian approved; modules developed, functioned and documented",
+    "Document reference material in repository; design overview pipeline visualisation",
+    "Find existing repositories or create repository; establish a codebase"
+  ),
+  Status = c("⬜",
+             "⬜",
+             "⬜",
+             "⬜",
+             "⬜",
+             "⬜",
+             "🔄",
+             "✅")
+)
+trl <- trl[nrow(trl):1, ]
+
+kable(trl, col.names = c("TRL", "Description", "Actions", "Status"),
+      align = c("c", "l", "l", "c"), row.names = F) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = TRUE,
+                font_size = 13) %>%
+  column_spec(1, width = "3em", bold = TRUE) %>%
+  column_spec(2, width = "20em") %>%
+  column_spec(3, width = "30em") %>%
+  column_spec(4, width = "3em") %>%
+  row_spec(which(trl$Status == "📍"), background = "#fff9e6")
+```
+
+## Toolbox
+
+**Functions**:  
+- Image-Prep for `cellpose` segmentation from a directory of Xenium outs folders (not documented; n=1; python). [pageX]()  
+- Rapid regeneration of Seurat Object from custom mask (not documented; n=1; R/python). [pageX]() 
+
+**Workflows**:  
+- Data-informed merging of custom cell segmentation (not documented; n=1; R/python). [pageX]() 
+
+<!---Change Log--->
+
+<details><summary>**Change Log:**</summary>
+
+<hr>
+
+<div class = "hint-goals">  
+**2026-03-30** Reference data to download  
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE312420  
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE312415  
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE284742  
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE307895 PMID: 41252205
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE300147
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE270678 VISIUM
+</div>
+
+
+<hr>
+
+<div class = "hint-goals">  
+**2026-03-25** Update (but not organised)  
+I currently have  
+a) python function for Xenium-specific image preparations for cellpose segmentation.  
+b) python script for pulling transcript data and generating a new `.mtx`, `barcodes.tsv` and `features.tsv` from a custom segmentation.  
+c) have a workflow for data-informed custom merge segmentation.  
+**Need to now document these and ingest those into this repo**...  
+Next, need to have a custom-into-Seurat vs XeniumRanger-into-Seurat workflow. Working on this now.   
+</div>
+
+<hr>
+
+<div class = "hint-goals">  
+**2026-03-18** Xenium Pipeline page created.  
+First update!  
+</div>
+
+</details>
+<br>

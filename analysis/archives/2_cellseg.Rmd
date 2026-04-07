@@ -1,0 +1,164 @@
+
+
+# Cell Segmentation Pipeline
+
+For Image Processing, we'll primarily use `python`, as it is the most versatile and reproducible, with the trade off that it is not very interactive (compared to ImageJ and QuPath). 
+
+- [**Data Preparation**](#data-preparation): Will point to a project directory and extract the imaging data relevant to cell segmentation: Cropping and/or resizing images for training a segmentation model, which includes a nuclear and surface stain (combined markers)
+
+- **Cellpose model training**: Training a custom model for cell segmentation for this project specifically. 
+
+- **Bulk Cell Segmentation**: Apply the trained model to all of the full images 
+
+- **Data extraction**: Extract extra information per cell, if required. 
+
+
+## Data Preparation
+
+Here we take advantage of knowing what the xenium output is going to be. We know for example, that inside each output folder, there's a folder called `morphology_focus/` with 4 images for DAPI, CD45/Ecadherin/ATP1A1, 18S and Vimentin/aSMA. We'll have the following folder structure (e.g.):
+
+```{text}
+├── Experiment_name_1 (root directory)
+│     └── data
+│            └── Xenium_output_1
+│            └── Xenium_output_n
+│            └── ...
+│            └── markers.csv
+│            └── samples.csv
+│     └── 1 segmentation
+│            └── crops
+│            └── full
+│            └── masks
+│            └── compartments
+│     └── 2 pyprofiler_out
+├── ...
+├── Experiment_name_n
+```
+
+The module for data preparation here will:
+
+- iterate through each sample available
+
+- find the morphology_focus folder
+
+- combine the stained markers into a single mask and stack with the dapi image
+
+- save these images to the `1 segmentation/full` folder and generate a series of randomly cropped areas to `1 segmentation/crops`
+
+From here, we should be able to just use cellpose to train a model off the back of a foundational model.
+
+<hr>
+
+**Function**:
+
+```{python, eval=F}
+import os
+import tifffile
+from skimage import exposure,img_as_uint
+import numpy as np
+import random
+
+def xenium_dataprep(
+  projectdir: str, # this would be Experiment_name_1
+  datadir: str = 'data', # where the folders are found
+  dapi_index: int = 0, # choose the index where DAPI is - will always be first 
+  surface = [0,1,1,1], # choose the others.
+  ncrops = 10, # number of crops per sample for training
+  level: int = 1, 
+  cropsize = 200 # size in µm for each crop
+):
+  
+  # error checking
+  if not os.path.isdir(projectdir):
+      raise ValueError(f"Project directory {projectdir!r} does not exist or is not a directory.")
+  
+  datadir = os.path.join(projectdir, datadir)
+  if not os.path.isdir(datadir):
+      raise ValueError(f"Data directory {datadir!r} does not exist or is not a directory.")
+  
+  samples = [name for name in os.listdir(datadir) if os.path.isdir(os.path.join(datadir, name))]
+  if len(samples) ==0:
+    raise ValueError(f"No samples found in {datadir}. Please check the directory and ensure it contains sample folders.")
+  
+  scalefactors = {
+    0: 0.2125,
+    1: 0.4250,
+    2: 0.85,
+    3: 1.7,
+    4: 3.4,
+    5: 6.8,
+    6: 13.6,
+    7: 27.2,
+  }
+  res = 1/scalefactors[level]
+
+  # convert cropsize from µm to pixels
+  cropsize = int(cropsize * res)
+
+  # create directories
+  os.makedirs(os.path.join(projectdir, "1 segmentation"), exist_ok=True)
+  os.makedirs(os.path.join(projectdir, "1 segmentation/crops"), exist_ok=True)
+  os.makedirs(os.path.join(projectdir, "1 segmentation/full"), exist_ok=True)
+  os.makedirs(os.path.join(projectdir, "1 segmentation/masks"), exist_ok=True)
+  os.makedirs(os.path.join(projectdir, "1 segmentation/compartments"), exist_ok=True)
+
+
+  for sample in samples:
+    imdir = os.path.join(datadir, sample, "morphology_focus")
+    if not os.path.isdir(imdir):
+      print(f"Warning: morphology_focus directory not found for sample {sample}. Skipping this sample.")
+      continue
+    
+    images = [name for name in os.listdir(imdir) if os.path.isfile(os.path.join(imdir, name))]
+    # sort the image list alphabetically so the indices are predictable
+    images = sorted(images)
+    
+    surface_names = [images[i] for i, flag in enumerate(surface) if flag]
+
+    normalized_stack = []
+    for stack in surface_names:
+            print("Opening image:", stack)
+            im = tifffile.imread(os.path.join(imdir, stack), is_ome=False, level=level)
+            im = exposure.rescale_intensity(im, in_range='image', out_range=(0.0, 1.0))
+            normalized_stack.append(img_as_uint(im))
+    normalized_stack = np.mean(normalized_stack, axis=0).astype(np.uint16)
+    
+    # normalise dapi separately to preserve the nuclear signal
+    dapi = tifffile.imread(os.path.join(imdir, images[dapi_index]), is_ome=False, level=level)
+    dapi = exposure.rescale_intensity(dapi, in_range='image', out_range=(0.0, 1.0))
+    dapi = img_as_uint(dapi)
+
+    # create empty channel for colour preferences (would be red channel)
+    empty_channel = np.zeros_like(dapi, dtype=np.uint16)
+    composite_stack = np.stack([empty_channel, normalized_stack, dapi])
+
+    im_output_path = os.path.join(projectdir, "1 segmentation/full", f"{sample}_{level}.tiff")
+    tifffile.imwrite(im_output_path, composite_stack)
+    
+
+    # crop images
+    # If no valid user crop is provided, perform a random crop
+    height, width = dapi.shape[0], dapi.shape[1]
+
+    if width < cropsize or height < cropsize:
+      # If the image is smaller than the desired crop size, save it without cropping.
+      crop_output_path = os.path.join(projectdir, "1 segmentation/crops", f"{sample}_{level}.tiff")
+      tifffile.imwrite(crop_output_path, composite_stack)
+      print(f"Image {sample} is smaller than {cropsize} px => saved without cropping.\n")
+      continue
+    # if the image is large enough, perform random cropping
+    workable_x = width - cropsize
+    workable_y = height - cropsize
+
+    # iterate ncrops times to create multiple random crops per sample
+    for crop_num in range(ncrops):
+      rand_x = random.randint(0, workable_x)
+      rand_y = random.randint(0, workable_y)
+      cropped = composite_stack[:, rand_y:rand_y + cropsize, rand_x:rand_x + cropsize]
+      crop_output_path = os.path.join(projectdir, "1 segmentation/crops", f"{sample}_{level}_{crop_num}.tiff")
+      tifffile.imwrite(crop_output_path, cropped)
+      print(f"{sample}_{level}_{crop_num}: random-cropped at (x={rand_x}, y={rand_y}, size={cropsize})\n.")
+
+  
+```
+

@@ -1,0 +1,29 @@
+name: Precgo
+output_dir: ../docs
+navbar:
+  title: "<img src='assets/footer/PGlogo.png' style='height:30px; vertical-align:middle; align-items:center; margin-right:10px;'>"
+  left:
+  - text: Home
+    href: index.html
+
+  - text: Modules
+    menu:
+      - text: Imaging
+        href: module_imaging.html
+
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/DrThomasOneil/
+output:
+  workflowr::wflow_html:
+    self_contained: true  
+    toc: yes
+    toc_float: yes
+    code_download: true
+    theme: paper
+    highlight: haddock
+    css: adit/custom.css
+    code_folding: "hide"
+    includes:
+      after_body: adit/footer.html
+      in_header: adit/head.html

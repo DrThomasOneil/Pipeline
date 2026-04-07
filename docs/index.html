@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>PrecisionGO</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="icon" type="image/png" href="assets/logo/DRSN_logo_smaller_filt.png">
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="adit/custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"><img src='assets/footer/PGlogo.png' style='height:30px; vertical-align:middle; align-items:center; margin-right:10px;'></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Modules
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="module_imaging.html">Imaging</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/DrThomasOneil/">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore"><span
+style="display:none;">PrecisionGO</span></h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-04-08
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 0
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Xenium/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongnoversioncontrol">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>Repository version:</strong> no
+version control </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongnoversioncontrol"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Tracking code development and connecting the code version to the
+results is critical for reproducibility. To start using Git, open the
+Terminal and type <code>git init</code> in your project directory.</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+This project is not being versioned with Git. To obtain the full
+reproducibility benefits of using workflowr, please see
+<code>?wflow_start</code>.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<style>
+.pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; }
+.pipeline-title { font-size: 20px; font-weight: 600; color: #555; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; display: block; text-align: center; }
+.pipeline-title:hover { color: #111; text-decoration: underline; }
+.pipeline-flow { display: flex; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.pipe-start { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 10px; }
+.pipe-start svg { width: 32px; height: 32px; opacity: 0.6; }
+.pipe-start span { font-size: 14px; color: #888; }
+.pipe-arrow { display: flex; align-items: center; padding-top: 24px; color: #ccc; }
+.pipe-arrow svg { width: 28px; height: 16px; }
+.pipe-node { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; width: 112px; transition: transform 0.15s; }
+.pipe-node:hover { transform: translateY(-2px); }
+.pipe-node:hover .pipe-box { border-color: #666; }
+.pipe-box { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #f9f9f9; width: 100px; height: 80px; display: flex; align-items: center; justify-content: center; }
+.pipe-box img { width: 100%; height: 100%; object-fit: cover; }
+.pipe-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.pipe-placeholder svg { width: 28px; height: 28px; opacity: 0.18; }
+.pipe-label { margin-top: 6px; font-size: 12px; font-weight: 500; text-align: center; line-height: 1.3; max-width: 112px; color: #222; }
+.pipe-sub-col { display: flex; flex-direction: column; align-items: center; }
+.pipe-sub-line { width: 1px; height: 14px; background: #ddd; }
+.pipe-sub-box { border: 1px dashed #ccc; border-radius: 8px; background: #fff; width: 90px; padding: 5px 4px; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+.pipe-sub-box:hover { border-color: #888; }
+.pipe-sub-tag { font-size: 8px; color: #aaa; background: #f0f0f0; border-radius: 3px; padding: 1px 4px; margin-bottom: 2px; }
+.pipe-sub-label { font-size: 9px; font-weight: 500; color: #666; text-align: center; line-height: 1.3; }
+.pipe-skip-arc { display: flex; align-items: flex-end; overflow: visible; justify-content: center; }
+</style>
+
+<script>
+var FOLDER = '<svg viewBox="0 0 40 40" fill="none"><path d="M4 12C4 10.3 5.3 9 7 9H16L19 13H33C34.7 13 36 14.3 36 16V30C36 31.7 34.7 33 33 33H7C5.3 33 4 31.7 4 30V12Z" fill="currentColor"/></svg>';
+var ARROW  = '<svg viewBox="0 0 28 16" fill="none"><line x1="2" y1="8" x2="22" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="15,3 24,8 15,13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var PLACEHOLDER = '<svg viewBox="0 0 40 40" fill="none"><rect x="4" y="4" width="32" height="32" rx="6" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="15" r="3" stroke="currentColor" stroke-width="1.2"/><polyline points="4,28 13,19 20,26 26,20 36,30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+
+function renderPipeline(config) {
+  var wrap = document.getElementById(config.id);
+  if (!wrap) return;
+
+  var titleEl = wrap.querySelector('.pipeline-title');
+  if (titleEl) { titleEl.textContent = config.title; titleEl.href = config.titleHref || '#'; }
+
+  var skips = [];
+  config.steps.forEach(function(s, i) {
+    if (s.skipTo !== undefined) skips.push({ from: i, to: s.skipTo });
+  });
+
+  var arcRow = wrap.querySelector('.pipe-skip-arc');
+  if (arcRow && skips.length > 0) {
+    var stepW = 112 + 28;
+    var startOffset = 40;
+    var svgW = startOffset + (config.steps.length * stepW) + 20;
+    var svgH = 20;
+    var paths = skips.map(function(sk) {
+      var x1 = startOffset + sk.from * stepW + 56;
+      var x2 = startOffset + sk.to  * stepW + 56;
+      var r  = 10;
+      return '<path d="M' + x1 + ' ' + svgH + ' L' + x1 + ' ' + r + ' Q' + x1 + ' 0 ' + (x1+r) + ' 0 L' + (x2-r) + ' 0 Q' + x2 + ' 0 ' + x2 + ' ' + r + ' L' + x2 + ' ' + svgH + '" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3" fill="none" marker-end="url(#skip-arrow-' + config.id + ')"/>';
+    }).join('');
+    arcRow.innerHTML = '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" overflow="visible"><defs><marker id="skip-arrow-' + config.id + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>' + paths + '</svg>';
+  }
+
+  var flowEl = wrap.querySelector('.pipeline-flow');
+  var html = '<div class="pipe-start">' + FOLDER + '<span>Data</span></div>';
+
+  config.steps.forEach(function(s) {
+    html += '<div class="pipe-arrow">' + ARROW + '</div>';
+
+    var nodeInner = '<div class="pipe-box">' +
+      (s.img ? '<img src="' + s.img + '" alt="' + s.label + '">' : '<div class="pipe-placeholder">' + PLACEHOLDER + '</div>') +
+      '</div><span class="pipe-label">' + s.label + '</span>';
+
+    if (s.sub) {
+      html += '<div class="pipe-sub-col">';
+      html += '<a class="pipe-node" href="' + (s.href || '#') + '">' + nodeInner + '</a>';
+      html += '<div class="pipe-sub-line"></div>';
+      html += '<a class="pipe-sub-box" href="' + (s.sub.href || '#') + '">';
+      if (s.sub.tag) html += '<span class="pipe-sub-tag">' + s.sub.tag + '</span>';
+      html += '<span class="pipe-sub-label">' + s.sub.label + '</span></a>';
+      html += '</div>';
+    } else {
+      html += '<a class="pipe-node" href="' + (s.href || '#') + '">' + nodeInner + '</a>';
+    }
+  });
+
+  flowEl.innerHTML = html;
+}
+</script>
+<script>
+var Xenium = {
+  id:        "pipeline-xenium",
+  title:     "Xenium spatial pipeline",
+  titleHref: "xenium-index.html",
+  steps: [
+    { label: "Cell segmentation", 
+      img: "assets/index-ims/segment.png", 
+      href: "xenium-segmentation.html"},
+    { label: "Data processing",   
+      img: "assets/index-ims/analysis.png", 
+      href: "xenium-processing.html",
+    },
+    { label: "Spatial analysis",  
+      img: "assets/index-ims/spatial.png", 
+      href: "xenium-spatial.html" },
+  ]
+};
+
+var Visium = {
+  id:        "pipeline-visium",
+  title:     "Visium spatial pipeline",
+  titleHref: "xenium.html",
+  steps: [
+    { label: "Cell segmentation", img: "", href: "segmentation.html" , skipTo: 2},
+    { label: "Data processing",   img: "", href: "processing.html",
+      skipTo: 2,
+      sub: { label: "Alt. segmentation", tag: "optional", href: "alt-seg.html" }
+    },
+    { label: "Spatial analysis",  img: "", href: "spatial.html" },
+  ]
+};
+</script>
+<div style="text-align: left;">
+<img src="assets/logo/DRSN_logo_smaller.png" alt="Image" style="width: 2in; float: left; margin-right: 10px;">
+<div style="overflow: hidden; padding-top: 8%;">
+<div id="precisiongo-pipelines" class="section level2">
+<h2><strong>PrecisionGo Pipelines</strong></h2>
+<br>
+<hr>
+</div>
+<p><br></p>
+<p><br></p>
+<div class="pipeline-wrap" id="pipeline-xenium">
+  <a class="pipeline-title" href="#"></a>
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(Xenium);</script>
+</div>
+<div id="toolbox" class="section level2">
+<h2>Toolbox</h2>
+<div id="imaging" class="section level3">
+<h3>Imaging</h3>
+<ul>
+<li>Mask merging:</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnPHNwYW4gc3R5bGUgPSAiZGlzcGxheTpub25lOyI+UHJlY2lzaW9uR088L3NwYW4+JwpvdXRwdXQ6CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogZmFsc2UKICAgIHNlbGZfY29udGFpbmVkOiB0cnVlCiAgICBjc3M6IGFkaXQvY3VzdG9tLmNzcwpzaXRlOiB3b3JrZmxvd3I6OndmbG93X3NpdGUKLS0tCgpgYGB7PWh0bWx9CjxzdHlsZT4KLnBpcGVsaW5lLXdyYXAgeyBmb250LWZhbWlseTogLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBzYW5zLXNlcmlmOyBtYXJnaW46IDEuNXJlbSAwOyB9Ci5waXBlbGluZS10aXRsZSB7IGZvbnQtc2l6ZTogMjBweDsgZm9udC13ZWlnaHQ6IDYwMDsgY29sb3I6ICM1NTU7IG1hcmdpbi1ib3R0b206IDEwcHg7IHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7IGxldHRlci1zcGFjaW5nOiAwLjA1ZW07IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgZGlzcGxheTogYmxvY2s7IHRleHQtYWxpZ246IGNlbnRlcjsgfQoucGlwZWxpbmUtdGl0bGU6aG92ZXIgeyBjb2xvcjogIzExMTsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IH0KLnBpcGVsaW5lLWZsb3cgeyBkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogZmxleC1zdGFydDsgZmxleC13cmFwOiB3cmFwOyBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjsgfQoucGlwZS1zdGFydCB7IGRpc3BsYXk6IGZsZXg7IGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47IGFsaWduLWl0ZW1zOiBjZW50ZXI7IGdhcDogNnB4OyBwYWRkaW5nLXRvcDogMTBweDsgfQoucGlwZS1zdGFydCBzdmcgeyB3aWR0aDogMzJweDsgaGVpZ2h0OiAzMnB4OyBvcGFjaXR5OiAwLjY7IH0KLnBpcGUtc3RhcnQgc3BhbiB7IGZvbnQtc2l6ZTogMTRweDsgY29sb3I6ICM4ODg7IH0KLnBpcGUtYXJyb3cgeyBkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBwYWRkaW5nLXRvcDogMjRweDsgY29sb3I6ICNjY2M7IH0KLnBpcGUtYXJyb3cgc3ZnIHsgd2lkdGg6IDI4cHg7IGhlaWdodDogMTZweDsgfQoucGlwZS1ub2RlIHsgZGlzcGxheTogZmxleDsgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsgYWxpZ24taXRlbXM6IGNlbnRlcjsgdGV4dC1kZWNvcmF0aW9uOiBub25lOyBjb2xvcjogaW5oZXJpdDsgd2lkdGg6IDExMnB4OyB0cmFuc2l0aW9uOiB0cmFuc2Zvcm0gMC4xNXM7IH0KLnBpcGUtbm9kZTpob3ZlciB7IHRyYW5zZm9ybTogdHJhbnNsYXRlWSgtMnB4KTsgfQoucGlwZS1ub2RlOmhvdmVyIC5waXBlLWJveCB7IGJvcmRlci1jb2xvcjogIzY2NjsgfQoucGlwZS1ib3ggeyBib3JkZXI6IDFweCBzb2xpZCAjZGRkOyBib3JkZXItcmFkaXVzOiAxMHB4OyBvdmVyZmxvdzogaGlkZGVuOyBiYWNrZ3JvdW5kOiAjZjlmOWY5OyB3aWR0aDogMTAwcHg7IGhlaWdodDogODBweDsgZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IGNlbnRlcjsganVzdGlmeS1jb250ZW50OiBjZW50ZXI7IH0KLnBpcGUtYm94IGltZyB7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IG9iamVjdC1maXQ6IGNvdmVyOyB9Ci5waXBlLXBsYWNlaG9sZGVyIHsgZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IGNlbnRlcjsganVzdGlmeS1jb250ZW50OiBjZW50ZXI7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IH0KLnBpcGUtcGxhY2Vob2xkZXIgc3ZnIHsgd2lkdGg6IDI4cHg7IGhlaWdodDogMjhweDsgb3BhY2l0eTogMC4xODsgfQoucGlwZS1sYWJlbCB7IG1hcmdpbi10b3A6IDZweDsgZm9udC1zaXplOiAxMnB4OyBmb250LXdlaWdodDogNTAwOyB0ZXh0LWFsaWduOiBjZW50ZXI7IGxpbmUtaGVpZ2h0OiAxLjM7IG1heC13aWR0aDogMTEycHg7IGNvbG9yOiAjMjIyOyB9Ci5waXBlLXN1Yi1jb2wgeyBkaXNwbGF5OiBmbGV4OyBmbGV4LWRpcmVjdGlvbjogY29sdW1uOyBhbGlnbi1pdGVtczogY2VudGVyOyB9Ci5waXBlLXN1Yi1saW5lIHsgd2lkdGg6IDFweDsgaGVpZ2h0OiAxNHB4OyBiYWNrZ3JvdW5kOiAjZGRkOyB9Ci5waXBlLXN1Yi1ib3ggeyBib3JkZXI6IDFweCBkYXNoZWQgI2NjYzsgYm9yZGVyLXJhZGl1czogOHB4OyBiYWNrZ3JvdW5kOiAjZmZmOyB3aWR0aDogOTBweDsgcGFkZGluZzogNXB4IDRweDsgZGlzcGxheTogZmxleDsgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsgYWxpZ24taXRlbXM6IGNlbnRlcjsgdGV4dC1kZWNvcmF0aW9uOiBub25lOyB9Ci5waXBlLXN1Yi1ib3g6aG92ZXIgeyBib3JkZXItY29sb3I6ICM4ODg7IH0KLnBpcGUtc3ViLXRhZyB7IGZvbnQtc2l6ZTogOHB4OyBjb2xvcjogI2FhYTsgYmFja2dyb3VuZDogI2YwZjBmMDsgYm9yZGVyLXJhZGl1czogM3B4OyBwYWRkaW5nOiAxcHggNHB4OyBtYXJnaW4tYm90dG9tOiAycHg7IH0KLnBpcGUtc3ViLWxhYmVsIHsgZm9udC1zaXplOiA5cHg7IGZvbnQtd2VpZ2h0OiA1MDA7IGNvbG9yOiAjNjY2OyB0ZXh0LWFsaWduOiBjZW50ZXI7IGxpbmUtaGVpZ2h0OiAxLjM7IH0KLnBpcGUtc2tpcC1hcmMgeyBkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogZmxleC1lbmQ7IG92ZXJmbG93OiB2aXNpYmxlOyBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjsgfQo8L3N0eWxlPgoKPHNjcmlwdD4KdmFyIEZPTERFUiA9ICc8c3ZnIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTQgMTJDNCAxMC4zIDUuMyA5IDcgOUgxNkwxOSAxM0gzM0MzNC43IDEzIDM2IDE0LjMgMzYgMTZWMzBDMzYgMzEuNyAzNC43IDMzIDMzIDMzSDdDNS4zIDMzIDQgMzEuNyA0IDMwVjEyWiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+JzsKdmFyIEFSUk9XICA9ICc8c3ZnIHZpZXdCb3g9IjAgMCAyOCAxNiIgZmlsbD0ibm9uZSI+PGxpbmUgeDE9IjIiIHkxPSI4IiB4Mj0iMjIiIHkyPSI4IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwb2x5bGluZSBwb2ludHM9IjE1LDMgMjQsOCAxNSwxMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4nOwp2YXIgUExBQ0VIT0xERVIgPSAnPHN2ZyB2aWV3Qm94PSIwIDAgNDAgNDAiIGZpbGw9Im5vbmUiPjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgcng9IjYiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjEuNSIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iMTUiIHI9IjMiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjEuMiIvPjxwb2x5bGluZSBwb2ludHM9IjQsMjggMTMsMTkgMjAsMjYgMjYsMjAgMzYsMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjEuMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPic7CgpmdW5jdGlvbiByZW5kZXJQaXBlbGluZShjb25maWcpIHsKICB2YXIgd3JhcCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKGNvbmZpZy5pZCk7CiAgaWYgKCF3cmFwKSByZXR1cm47CgogIHZhciB0aXRsZUVsID0gd3JhcC5xdWVyeVNlbGVjdG9yKCcucGlwZWxpbmUtdGl0bGUnKTsKICBpZiAodGl0bGVFbCkgeyB0aXRsZUVsLnRleHRDb250ZW50ID0gY29uZmlnLnRpdGxlOyB0aXRsZUVsLmhyZWYgPSBjb25maWcudGl0bGVIcmVmIHx8ICcjJzsgfQoKICB2YXIgc2tpcHMgPSBbXTsKICBjb25maWcuc3RlcHMuZm9yRWFjaChmdW5jdGlvbihzLCBpKSB7CiAgICBpZiAocy5za2lwVG8gIT09IHVuZGVmaW5lZCkgc2tpcHMucHVzaCh7IGZyb206IGksIHRvOiBzLnNraXBUbyB9KTsKICB9KTsKCiAgdmFyIGFyY1JvdyA9IHdyYXAucXVlcnlTZWxlY3RvcignLnBpcGUtc2tpcC1hcmMnKTsKICBpZiAoYXJjUm93ICYmIHNraXBzLmxlbmd0aCA+IDApIHsKICAgIHZhciBzdGVwVyA9IDExMiArIDI4OwogICAgdmFyIHN0YXJ0T2Zmc2V0ID0gNDA7CiAgICB2YXIgc3ZnVyA9IHN0YXJ0T2Zmc2V0ICsgKGNvbmZpZy5zdGVwcy5sZW5ndGggKiBzdGVwVykgKyAyMDsKICAgIHZhciBzdmdIID0gMjA7CiAgICB2YXIgcGF0aHMgPSBza2lwcy5tYXAoZnVuY3Rpb24oc2spIHsKICAgICAgdmFyIHgxID0gc3RhcnRPZmZzZXQgKyBzay5mcm9tICogc3RlcFcgKyA1NjsKICAgICAgdmFyIHgyID0gc3RhcnRPZmZzZXQgKyBzay50byAgKiBzdGVwVyArIDU2OwogICAgICB2YXIgciAgPSAxMDsKICAgICAgcmV0dXJuICc8cGF0aCBkPSJNJyArIHgxICsgJyAnICsgc3ZnSCArICcgTCcgKyB4MSArICcgJyArIHIgKyAnIFEnICsgeDEgKyAnIDAgJyArICh4MStyKSArICcgMCBMJyArICh4Mi1yKSArICcgMCBRJyArIHgyICsgJyAwICcgKyB4MiArICcgJyArIHIgKyAnIEwnICsgeDIgKyAnICcgKyBzdmdIICsgJyIgc3Ryb2tlPSIjY2NjIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCNza2lwLWFycm93LScgKyBjb25maWcuaWQgKyAnKSIvPic7CiAgICB9KS5qb2luKCcnKTsKICAgIGFyY1Jvdy5pbm5lckhUTUwgPSAnPHN2ZyB3aWR0aD0iJyArIHN2Z1cgKyAnIiBoZWlnaHQ9IicgKyBzdmdIICsgJyIgdmlld0JveD0iMCAwICcgKyBzdmdXICsgJyAnICsgc3ZnSCArICciIG92ZXJmbG93PSJ2aXNpYmxlIj48ZGVmcz48bWFya2VyIGlkPSJza2lwLWFycm93LScgKyBjb25maWcuaWQgKyAnIiB2aWV3Qm94PSIwIDAgMTAgMTAiIHJlZlg9IjgiIHJlZlk9IjUiIG1hcmtlcldpZHRoPSI2IiBtYXJrZXJIZWlnaHQ9IjYiIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj48cGF0aCBkPSJNMiAxTDggNUwyIDkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvbWFya2VyPjwvZGVmcz4nICsgcGF0aHMgKyAnPC9zdmc+JzsKICB9CgogIHZhciBmbG93RWwgPSB3cmFwLnF1ZXJ5U2VsZWN0b3IoJy5waXBlbGluZS1mbG93Jyk7CiAgdmFyIGh0bWwgPSAnPGRpdiBjbGFzcz0icGlwZS1zdGFydCI+JyArIEZPTERFUiArICc8c3Bhbj5EYXRhPC9zcGFuPjwvZGl2Pic7CgogIGNvbmZpZy5zdGVwcy5mb3JFYWNoKGZ1bmN0aW9uKHMpIHsKICAgIGh0bWwgKz0gJzxkaXYgY2xhc3M9InBpcGUtYXJyb3ciPicgKyBBUlJPVyArICc8L2Rpdj4nOwoKICAgIHZhciBub2RlSW5uZXIgPSAnPGRpdiBjbGFzcz0icGlwZS1ib3giPicgKwogICAgICAocy5pbWcgPyAnPGltZyBzcmM9IicgKyBzLmltZyArICciIGFsdD0iJyArIHMubGFiZWwgKyAnIj4nIDogJzxkaXYgY2xhc3M9InBpcGUtcGxhY2Vob2xkZXIiPicgKyBQTEFDRUhPTERFUiArICc8L2Rpdj4nKSArCiAgICAgICc8L2Rpdj48c3BhbiBjbGFzcz0icGlwZS1sYWJlbCI+JyArIHMubGFiZWwgKyAnPC9zcGFuPic7CgogICAgaWYgKHMuc3ViKSB7CiAgICAgIGh0bWwgKz0gJzxkaXYgY2xhc3M9InBpcGUtc3ViLWNvbCI+JzsKICAgICAgaHRtbCArPSAnPGEgY2xhc3M9InBpcGUtbm9kZSIgaHJlZj0iJyArIChzLmhyZWYgfHwgJyMnKSArICciPicgKyBub2RlSW5uZXIgKyAnPC9hPic7CiAgICAgIGh0bWwgKz0gJzxkaXYgY2xhc3M9InBpcGUtc3ViLWxpbmUiPjwvZGl2Pic7CiAgICAgIGh0bWwgKz0gJzxhIGNsYXNzPSJwaXBlLXN1Yi1ib3giIGhyZWY9IicgKyAocy5zdWIuaHJlZiB8fCAnIycpICsgJyI+JzsKICAgICAgaWYgKHMuc3ViLnRhZykgaHRtbCArPSAnPHNwYW4gY2xhc3M9InBpcGUtc3ViLXRhZyI+JyArIHMuc3ViLnRhZyArICc8L3NwYW4+JzsKICAgICAgaHRtbCArPSAnPHNwYW4gY2xhc3M9InBpcGUtc3ViLWxhYmVsIj4nICsgcy5zdWIubGFiZWwgKyAnPC9zcGFuPjwvYT4nOwogICAgICBodG1sICs9ICc8L2Rpdj4nOwogICAgfSBlbHNlIHsKICAgICAgaHRtbCArPSAnPGEgY2xhc3M9InBpcGUtbm9kZSIgaHJlZj0iJyArIChzLmhyZWYgfHwgJyMnKSArICciPicgKyBub2RlSW5uZXIgKyAnPC9hPic7CiAgICB9CiAgfSk7CgogIGZsb3dFbC5pbm5lckhUTUwgPSBodG1sOwp9Cjwvc2NyaXB0PgpgYGAKCmBgYHs9aHRtbH0KPHNjcmlwdD4KdmFyIFhlbml1bSA9IHsKICBpZDogICAgICAgICJwaXBlbGluZS14ZW5pdW0iLAogIHRpdGxlOiAgICAgIlhlbml1bSBzcGF0aWFsIHBpcGVsaW5lIiwKICB0aXRsZUhyZWY6ICJ4ZW5pdW0taW5kZXguaHRtbCIsCiAgc3RlcHM6IFsKICAgIHsgbGFiZWw6ICJDZWxsIHNlZ21lbnRhdGlvbiIsIAogICAgICBpbWc6ICJhc3NldHMvaW5kZXgtaW1zL3NlZ21lbnQucG5nIiwgCiAgICAgIGhyZWY6ICJ4ZW5pdW0tc2VnbWVudGF0aW9uLmh0bWwifSwKICAgIHsgbGFiZWw6ICJEYXRhIHByb2Nlc3NpbmciLCAgIAogICAgICBpbWc6ICJhc3NldHMvaW5kZXgtaW1zL2FuYWx5c2lzLnBuZyIsIAogICAgICBocmVmOiAieGVuaXVtLXByb2Nlc3NpbmcuaHRtbCIsCiAgICB9LAogICAgeyBsYWJlbDogIlNwYXRpYWwgYW5hbHlzaXMiLCAgCiAgICAgIGltZzogImFzc2V0cy9pbmRleC1pbXMvc3BhdGlhbC5wbmciLCAKICAgICAgaHJlZjogInhlbml1bS1zcGF0aWFsLmh0bWwiIH0sCiAgXQp9OwoKdmFyIFZpc2l1bSA9IHsKICBpZDogICAgICAgICJwaXBlbGluZS12aXNpdW0iLAogIHRpdGxlOiAgICAgIlZpc2l1bSBzcGF0aWFsIHBpcGVsaW5lIiwKICB0aXRsZUhyZWY6ICJ4ZW5pdW0uaHRtbCIsCiAgc3RlcHM6IFsKICAgIHsgbGFiZWw6ICJDZWxsIHNlZ21lbnRhdGlvbiIsIGltZzogIiIsIGhyZWY6ICJzZWdtZW50YXRpb24uaHRtbCIgLCBza2lwVG86IDJ9LAogICAgeyBsYWJlbDogIkRhdGEgcHJvY2Vzc2luZyIsICAgaW1nOiAiIiwgaHJlZjogInByb2Nlc3NpbmcuaHRtbCIsCiAgICAgIHNraXBUbzogMiwKICAgICAgc3ViOiB7IGxhYmVsOiAiQWx0LiBzZWdtZW50YXRpb24iLCB0YWc6ICJvcHRpb25hbCIsIGhyZWY6ICJhbHQtc2VnLmh0bWwiIH0KICAgIH0sCiAgICB7IGxhYmVsOiAiU3BhdGlhbCBhbmFseXNpcyIsICBpbWc6ICIiLCBocmVmOiAic3BhdGlhbC5odG1sIiB9LAogIF0KfTsKPC9zY3JpcHQ+CmBgYAoKPGRpdiBzdHlsZT0idGV4dC1hbGlnbjogbGVmdDsiPgogIDxpbWcgc3JjPSJhc3NldHMvbG9nby9EUlNOX2xvZ29fc21hbGxlci5wbmciIGFsdD0iSW1hZ2UiIHN0eWxlPSJ3aWR0aDogMmluOyBmbG9hdDogbGVmdDsgbWFyZ2luLXJpZ2h0OiAxMHB4OyI+CiAgPGRpdiBzdHlsZT0ib3ZlcmZsb3c6IGhpZGRlbjsgcGFkZGluZy10b3A6IDglOyI+CgojIyAqKlByZWNpc2lvbkdvIFBpcGVsaW5lcyoqICAgIAo8YnI+Cjxocj4KPC9kaXY+IAo8YnI+Cgo8YnI+CgoKYGBgez1odG1sfQo8ZGl2IGNsYXNzPSJwaXBlbGluZS13cmFwIiBpZD0icGlwZWxpbmUteGVuaXVtIj4KICA8YSBjbGFzcz0icGlwZWxpbmUtdGl0bGUiIGhyZWY9IiMiPjwvYT4KICA8ZGl2IGNsYXNzPSJwaXBlLXNraXAtYXJjIj48L2Rpdj4KICA8ZGl2IGNsYXNzPSJwaXBlbGluZS1mbG93Ij48L2Rpdj4KPC9kaXY+CjxzY3JpcHQ+cmVuZGVyUGlwZWxpbmUoWGVuaXVtKTs8L3NjcmlwdD4KYGBgCgoKIyMgVG9vbGJveAoKIyMjIEltYWdpbmcKCi0gTWFzayBtZXJnaW5nOiAKCgo=</div>
+<div class="custom-footer">
+  <div class="footer-left" style="width: 30%; display: flex; justify-content: center; align-items: center;">
+    <a href="https://wimr.org.au/" target="_blank">
+      <img src="assets/footer/footer1.png" alt="wimr-logo" style="max-height: 100px; width: auto;">
+    </a>
+   </div>
+  <div class="footer-center">
+    <p><strong>PrecisionGO</strong><br>
+      <a href="mailto:thomas.oneil@sydney.edu.au"><strong>Contact us</strong></a>
+    </p>
+  </div>
+  <div class="footer-right" style="width: 30%; display: flex; justify-content: center; align-items: center;">
+    <a href="https://www.precisiongo.com.au/" target="_blank">
+      <img src="assets/footer/PGlogo.png" alt="wimr-logo" style="max-height: 100px; width: auto;">
+    </a>  
+  </div>
+</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("index.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
