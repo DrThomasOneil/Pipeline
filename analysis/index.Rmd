@@ -3,8 +3,6 @@ title: '<span style = "display:none;">PrecisionGO</span>'
 output:
   workflowr::wflow_html:
     toc: false
-    self_contained: true
-    css: adit/custom.css
 site: workflowr::wflow_site
 ---
 

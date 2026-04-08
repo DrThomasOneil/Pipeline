@@ -16,10 +16,9 @@ navbar:
     href: https://github.com/DrThomasOneil/
 output:
   workflowr::wflow_html:
-    self_contained: true
     toc: yes
     toc_float: yes
-    code_download: true
+    code_download: false
     theme: paper
     highlight: haddock
     css: adit/custom.css
