@@ -11,7 +11,7 @@
 
 
 
-<title>PrecisionGO</title>
+<title>xenium-segmentation.knit.md</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -290,8 +290,6 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><span
-style="display:none;">PrecisionGO</span></h1>
 
 </div>
 
@@ -524,57 +522,171 @@ function renderPipeline(config) {
   flowEl.innerHTML = html;
 }
 </script>
+<div id="cell-segmentation" class="section level2 tabset tabset-fade">
+<h2 class="tabset tabset-fade">Cell Segmentation</h2>
+<p>Cell segmentation is the computational process of identifying and
+delineating individual cell boundaries within microscopy images,
+essentially teaching a computer to “<strong>see</strong>” where one cell
+ends and another begins. It is a foundational step in any imaging-based
+analysis pipeline, as all downstream measurements (transcript counts,
+protein expression, spatial relationships) are only as accurate as the
+segmentation that defines the cell units being measured. Poor
+segmentation directly propagates error: oversegmented cells artificially
+inflate cell counts and fragment expression profiles, while
+undersegmented cells conflate signals from neighbouring populations.</p>
+<p>A persistent challenge is that generalised segmentation models,
+including those bundled in proprietary platforms like 10x Xenium Ranger,
+are typically trained on canonical cell morphologies: round,
+evenly-spaced cells in culture. In tissue, this assumption breaks down
+rapidly. Immune cells wedged between epithelial sheets, elongated
+fibroblasts, highly irregular tumour cells, and densely packed
+glomerular structures all violate the shapes these models expect.
+Indeed, 10x encourage resegmentation and have provided resources on how
+to approach this <a
+href="https://www.10xgenomics.com/analysis-guides/segment-large-stained-cells-with-cellpose3">link</a>
+The result is systematic segmentation failure in precisely the cell
+populations that are often most biologically interesting. Custom model
+training on tissue-specific imaging data, as implemented in this module,
+is therefore not merely an optimisation - it is often a prerequisite for
+biologically meaningful results.</p>
+<p>We’ve developed this <strong>Cell Segmentation module</strong> that
+can be optionally used in several imaging pipelines, including Xenium,
+COMET, IMC, mIF, etc. In this version of the module, we have opted for
+the cellpose method, as it provides a user-friendly UI and pre-trained
+starting models for training.</p>
 <script>
-var Xenium = {
-  id:        "pipeline-xenium",
+var Segment = {
+  id:        "pipeline-segment",
   title:     "Xenium spatial pipeline",
   titleHref: "xenium-index.html",
   steps: [
-    { label: "Cell segmentation", 
-      img: "assets/index-ims/segment.png", 
-      href: "xenium-segmentation.html"},
-    { label: "Data processing",   
-      img: "assets/index-ims/analysis.png", 
-      href: "xenium-processing.html",
+    { label: "Image Processing", 
+      img: "assets/index-ims/xen-im-proc.png",
+      href: "", 
+      skipTo: 2.15},
+    { label: "Cellpose training",   
+      img: "assets/index-ims/cellpose-training.png", 
+      href: "",
     },
-    { label: "Spatial analysis",  
-      img: "assets/index-ims/spatial.png", 
-      href: "xenium-spatial.html" },
+    { label: "Bulk Segmentation",  
+      img: "assets/index-ims/bulk-seg.png", 
+      href: "" ,
+      sub: { label: "Merge Masks", tag: "Optional", href: "" }
+
+},
+    { label: "Xenium Ranger",  
+      img: "assets/index-ims/post-seg-col.jpg", 
+      href: "" ,
+      sub: { label: "Skip XenRanger", tag: "Quicker!", href: "" }
+    }
+      
   ]
 };
 
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium spatial pipeline",
-  titleHref: "xenium.html",
-  steps: [
-    { label: "Cell segmentation", img: "", href: "segmentation.html" , skipTo: 2},
-    { label: "Data processing",   img: "", href: "processing.html",
-      skipTo: 2,
-      sub: { label: "Alt. segmentation", tag: "optional", href: "alt-seg.html" }
-    },
-    { label: "Spatial analysis",  img: "", href: "spatial.html" },
-  ]
-};
 </script>
-<div style="text-align: left;">
-<img src="assets/logo/DRSN_logo_smaller.png" alt="Image" style="width: 2in; float: left; margin-right: 10px;">
-<div id="precisiongo-pipelines" class="section level2"
-style="overflow: hidden; padding-top: 8%;">
-<h2><strong>PrecisionGo Pipelines</strong></h2>
-<br>
-<hr>
-</div>
-</div>
-<p><br></p>
-<p><br></p>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
+<div class="pipeline-wrap" id="pipeline-segment">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
+<script>renderPipeline(Segment);</script>
+<div id="image-processing" class="section level3">
+<h3><strong>Image Processing</strong></h3>
+<p><span style="font-size: 14pt"><strong>Image
+Processing</strong></span></p>
+<p><img src="assets/index-ims/xen-im-proc.png" alt="xen-im-proc" style="width: 3in; float: left; margin-right: 0px;"></p>
+<div style="width: 6in; float: right;">
+<p>Image processing can be a fairly manual process if done in ImageJ or
+Qupath. It requires either a lot of point and clicking, or you require
+some programming skills to write macros. Moreover, it can be
+computationally slow/restrictive if the images are too large to open. As
+a result, we’ve developed a <code>python</code> function that performs
+the pre-processing required for cellpose. It currently processes images
+in ~1 minute, which outperforms manual processing in ImageJ (estimated
+to take about 15-20 minutes)</p>
+<p>Cellpose allows for both a nuclei and a surface image. However,
+Xenium provides 4 images: DAPI, CD45/Ecadherin/ATP1A1, 18S,
+Vimentin/aSMA. Our function allows the user to select multiple
+<em>surface</em> stains to be combined into the single surface stain for
+segmentation, to provide as much data for a universal cell segmentation
+model. We also allow the user to select a lower resolution layer of the
+images, which can speed up the segmentation process. 10x benchmarks have
+indicated that reducing the resolution by one layer (from 0.2125µm per
+pixel to …µm per pixel) have minimal impact on segmentation, but speeds
+the process up 10 fold.</p>
+<p>The output is then the segmentation-ready full image stack (full
+image segmentation - <strong>Step 3</strong>), and a series of random
+crops (model training - <strong>Step 2</strong>).</p>
 </div>
+<div style="clear: both;">
+
+</div>
+</div>
+<div id="cellpose-training" class="section level3">
+<h3><strong>Cellpose Training</strong></h3>
+<p><span style="font-size: 14pt"><strong>Cellpose
+Training</strong></span></p>
+<p><img src="assets/index-ims/cellpose-training.png" alt="cellpose-training" style="width: 3in; float: left; margin-right: 0px;"></p>
+<div style="width: 6in; float: right; margin-right: 0px;">
+<p>This step is optional, but allows the analyst to generate a custom
+segmentation model through cellpose. Cellpose provides an interactive
+UI, where the cropped images are drag-and-dropped into the application
+window. A pre-trained model can be used to start the training, and
+several settings can be adjusted, such as cell diameter. A starting cell
+mask is generated and displayed, and the user can delete and/or add
+additional cell masks. This is then used to train a model and apply to
+the next crop. This is iteratively performed until the model is
+satisfactory.</p>
+</div>
+<div style="clear: both;">
+
+</div>
+</div>
+<div id="bulk-segmentation" class="section level3">
+<h3><strong>Bulk Segmentation</strong></h3>
+<p><span style="font-size: 14pt"><strong>Bulk
+Segmentation</strong></span></p>
+<p><img src="assets/index-ims/bulk-seg.png" alt="bulk-segmentation" style="width: 3in; float: left; margin-right: 0px;"></p>
+<div style="width: 6in; float: right; margin-right: 0px;">
+<p>Whether using a pre-trained model or a customised model, this step
+points to the full-sized cellpose-compatible images and runs cellpose
+without the GUI to generate masks of the entire image, and iterate
+through each image.</p>
+<p>The output would be a 16-bit <code>.npy</code> file per image. These
+can then be used in <strong>Step 4</strong> to regenerate the Xenium
+outputs with the new cell segmentation.</p>
+</div>
+<div style="clear: both;">
+
+</div>
+</div>
+<div id="merge-masks" class="section level3">
+<h3><em>Merge Masks</em></h3>
+<p><span style="font-size: 14pt"><strong>Merge Masks</strong></span></p>
+<p><img src="assets/index-ims/mask-merging.png" alt="bulk-segmentation" style="width: 4in; float: left; margin-right: 0px;"></p>
+<p>In some cases, hypotheses involving complex tissue environments
+requires the segmentation of multiple cell types of varying shape, size
+and density. This can be quite challenging for methods like cellpose to
+effectively segment every cell type.</p>
+<p>We therefore have the developed a method of merging two or more masks
+together. The challenge lies with choosing which mask to pull data from
+when pixels overlap, especially when you’ll likely have the same cell
+segmented in multiple masks (and we also want to avoid duplication). We
+can therefore analyse the masks themselves to identify privileged cell
+masks to preserve. For example, we might want the static mask to be of
+larger structures like muscle or epithelium; on the transfer mask, we
+might only want to preserve immune cells. Therefore, we analyse the
+transfer mask using our data analysis module and identify the identities
+of immune cells. When merging the masks, we replace the pixels of the
+static mask with “immune cells” from the transfer mask. We can also
+optionally choose to include cells that do not overlap with any cells in
+the static mask.</p>
+<p><a href="">See this page for an example</a></p>
+</div>
+<div style="clear: both;">
+
+</div>
+</div>
+<p><br></p>
 </div>
 </div>
 </div>
