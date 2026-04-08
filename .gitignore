@@ -23,3 +23,5 @@ Docs/0_bugs_files
 todo.R
 ignore/
 Functions/
+Analysis/archives
+*.html

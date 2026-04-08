@@ -6,17 +6,17 @@ navbar:
   - text: Home
     href: index.html
 
-  - text: Modules
+  - text: Pipelines
     menu:
-      - text: Imaging
-        href: module_imaging.html
+      - text: Xenium
+        href: xenium-index.html
 
   - icon: fab fa-github
     text: Source code
     href: https://github.com/DrThomasOneil/
 output:
   workflowr::wflow_html:
-    self_contained: true  
+    self_contained: true
     toc: yes
     toc_float: yes
     code_download: true
