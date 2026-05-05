@@ -388,15 +388,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree60bebe0b3a553c0bbab461bcf9354ba4e21fbae6targetblank60bebe0a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree3f5ce8d4b8f8f1ebfe97c688418550daa1e71253targetblank3f5ce8da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/60bebe0b3a553c0bbab461bcf9354ba4e21fbae6" target="_blank">60bebe0</a>
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/3f5ce8d4b8f8f1ebfe97c688418550daa1e71253" target="_blank">3f5ce8d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree60bebe0b3a553c0bbab461bcf9354ba4e21fbae6targetblank60bebe0a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree3f5ce8d4b8f8f1ebfe97c688418550daa1e71253targetblank3f5ce8da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -406,7 +406,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/60bebe0b3a553c0bbab461bcf9354ba4e21fbae6" target="_blank">60bebe0</a>.
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/3f5ce8d4b8f8f1ebfe97c688418550daa1e71253" target="_blank">3f5ce8d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -544,11 +544,16 @@ const tree = {
 };
 
 const descriptions = {
-  "VisiumHD": "Visium HD captures whole-transcriptome data at 2µm bin resolution, enabling near-single-cell spatial analysis across a large capture area. Best suited for discovery-driven experiments where cell-level resolution and transcriptome-wide coverage are both required.",
-  "Xenium":   "Xenium provides single-cell resolution spatial transcriptomics using targeted in situ sequencing. Ideal when your gene panel is defined and you need high sensitivity, subcellular resolution, or large tissue coverage across multiple sections.",
-  "Visium":   "Standard Visium captures whole-transcriptome data at 55µm spot resolution. Each spot contains a mixture of cells, so deconvolution is required to infer cell type composition. Well-suited for large-area tissue profiling where single-cell resolution is not required.",
-  "GeoMx":    "GeoMx DSP enables spatially resolved transcriptomics or proteomics from user-selected regions of interest. Ideal for hypothesis-driven experiments targeting specific tissue compartments identified by morphology or marker expression.",
+  "VisiumHD": "Visium HD captures whole-transcriptome data at 2µm bin resolution, enabling near-single-cell spatial analysis across a large capture area. Best suited for discovery-driven experiments where cell-level resolution and transcriptome-wide coverage are both required.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The 10X protocol allows for single round multiplex immunofluorescent imaging.<br><br><a href='vishd.html'>See the analysis pipeline for details</a>",
+  
+  "Xenium":   "Xenium provides single-cell resolution spatial transcriptomics using targeted in situ sequencing. Ideal when your gene panel is defined and you need high sensitivity, subcellular resolution, or large tissue coverage across multiple sections.<br><br><strong>Is this compatible with multiomics?</strong><br>Yes. Following the Xenium protocol, slides can be returned to the user and stained for proteomics. The caveat is that the 10X protocol may affect tissue integrity and/or the markers themselves.<br><br><a href='xen.html'>See the analysis pipeline for details</a>",
+  
+  "Visium":   "Standard Visium captures whole-transcriptome data at 55µm spot resolution. Each spot contains a mixture of cells, so deconvolution is required to infer cell type composition. Well-suited for large-area tissue profiling where single-cell resolution is not required.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The 10X protocol allows for single round multiplex immunofluorescent imaging.<br><br><a href='vis.html'>See the analysis pipeline for details</a>",
+  
+  "GeoMx":    "GeoMx DSP enables spatially resolved transcriptomics or proteomics from user-selected regions of interest. Ideal for hypothesis-driven experiments targeting specific tissue compartments identified by morphology or marker expression.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The GeoMx protocol allows for single round multiplex immunofluorescent imaging for contextual ROI selection.<br><br><a href='geomx.html'>See the analysis pipeline for details</a>",
+  
   "COMET":    "COMET enables high-parameter spatial proteomics (40–100+ markers) with single-cell resolution. Suited for deep immune profiling and complex tissue microenvironment characterisation.",
+  
   "mIF":      "Multiplex immunofluorescence supports low-parameter spatial proteomics (typically 4–8 markers) with high sensitivity and spatial resolution. Best for targeted validation, clinical samples, or when throughput and cost are priorities."
 };
 
