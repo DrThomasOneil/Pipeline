@@ -8,8 +8,28 @@ navbar:
 
   - text: Pipelines
     menu:
-      - text: Xenium
-        href: xen.html
+      - text: Spatial
+        menu:
+          - text: Xenium
+            href: xen.html
+          - text: Visium
+            href: vis.html
+          - text: VisiumHD
+            href: vishd.html
+      - text: Single Cell
+        menu:
+          - text: Single Cell RNA
+            href: xen.html
+          - text: ATAC-Seq
+            href: xen.html
+          - text: TCR/BCR Sequencing
+            href: vis.html
+          - text: Flow Cytometry
+            href: vishd.html
+  right:
+  - text: Choose a platform
+    href: platform.html
+
 output:
   workflowr::wflow_html:
     toc: yes
