@@ -1,4 +1,6 @@
 ---
+title: '<span style = "display:none;">VisiumHD</span>'
+
 output:
   workflowr::wflow_html:
     toc: false
