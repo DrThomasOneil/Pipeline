@@ -116,15 +116,30 @@ var Xenium = {
 
 var Visium = {
   id:        "pipeline-visium",
-  title:     "Visium spatial pipeline",
+  title:     "Visium Spatial Pipeline",
   titleHref: "vis.html",
   steps: [
-    { label: "Cell segmentation", img: "", href: "segmentation.html" , skipTo: 2},
-    { label: "Data processing",   img: "", href: "processing.html",
-      skipTo: 2,
-      sub: { label: "Alt. segmentation", tag: "optional", href: "alt-seg.html" }
+    { label: "Image processing", img: "", href: "vis.html"},
+    { label: "Data processing",   img: "", href: "vis.html"},
+    { label: "Spatial analysis",  img: "", href: "vis.html" },
+  ]
+};
+
+var VisiumHD = {
+  id:        "pipeline-vishd",
+  title:     "VisiumHD Spatial Pipeline",
+  titleHref: "vishd.html",
+  steps: [
+    { label: "Cell segmentation", 
+      img: "assets/index-ims/segment.png", 
+      href: "vishd.html"},
+    { label: "Data processing",   
+      img: "assets/index-ims/annotation.png", 
+      href: "vishd.html",
     },
-    { label: "Spatial analysis",  img: "", href: "spatial.html" },
+    { label: "Spatial analysis",  
+      img: "assets/index-ims/density.png", 
+      href: "vishd.html" },
   ]
 };
 </script>
@@ -139,6 +154,20 @@ var Visium = {
   <div class="pipeline-flow"></div>
 </div>
 <script>renderPipeline(Xenium);</script>
+
+<div class="pipeline-wrap" id="pipeline-visium">
+  <a class="pipeline-title" href="#"></a>
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(Visium);</script>
+
+<div class="pipeline-wrap" id="pipeline-vishd">
+  <a class="pipeline-title" href="#"></a>
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(VisiumHD);</script>
 ```
 
 <br><hr>

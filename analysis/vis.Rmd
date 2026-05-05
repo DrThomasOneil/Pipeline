@@ -7,7 +7,7 @@ output:
 site: workflowr::wflow_site
 ---
 
-## Xenium Analysis Pipeline {.tabset .tabset-fade}
+## Visium Analysis Pipeline {.tabset .tabset-fade}
 
 ```{=html}
 <style>
@@ -100,97 +100,87 @@ function renderPipeline(config) {
 
 ```{=html}
 <script>
-var Segment = {
+var VisiumSegment = {
   id:        "pipeline-segment",
-  title:     "Xenium spatial pipeline",
-  titleHref: "xen.html",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "Image Processing", 
-      img: "assets/index-ims/xen-im-proc.png",
-      href: "", 
-      skipTo: 2.15, 
-      sub: { label: "Registration", tag: "Optional", href: "" }},
-    { label: "Cellpose training",   
-      img: "assets/index-ims/cellpose-training.png", 
+    { label: "Tissue Detection",
+      img: "assets/index-ims/tissue-detection.png",
+      href: "" },
+    { label: "Image Registration",
+      img: "assets/index-ims/registration.png",
       href: "",
-    },
-    { label: "Bulk Segmentation",  
-      img: "assets/index-ims/bulk-seg.png", 
-      href: "" ,
-      sub: { label: "Merge Masks", tag: "Optional", href: "" }
+      sub: { label: "Fluorescent Microscopy", tag: "Optional", href: "" } },
+    { label: "Compartmentalisation",
+      img: "assets/index-ims/compartment.png",
+      href: ""},
+    { label: "Cell Identification",
+      img: "assets/index-ims/cell-id.png",
+      href: "" }
+  ]
+};
 
-},
-    { label: "Xenium Ranger",  
-      img: "assets/index-ims/post-seg-col.jpg", 
-      href: "" ,
-      sub: { label: "Skip XenRanger", tag: "Quicker!", href: "" }
-    }
-      
-  ]
-};
-var Process = {
+var VisiumProcess = {
   id:        "pipeline-process",
-  title:     "Xenium spatial pipeline",
-  titleHref: "xen.html",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "QC", 
+    { label: "QC",
       img: "assets/index-ims/qc_panel.png",
-      href: ""},
-    { label: "Normalisation",   
-      img: "assets/index-ims/normalisation.png", 
+      href: "" },
+    { label: "Normalisation",
+      img: "assets/index-ims/normalisation.png",
+      href: "" },
+    { label: "Clustering",
+      img: "assets/index-ims/clustering.png",
+      href: "" },
+    { label: "Annotation",
+      img: "assets/index-ims/annotation.png",
       href: "",
-    },
-    { label: "Clustering",  
-      img: "assets/index-ims/clustering.png", 
-      href: "" 
-    },
-    { label: "Annotation",  
-      img: "assets/index-ims/annotation.png", 
-      href: "" ,
-      sub: { label: "Single Cell Ref", tag: "Quicker!", href: "" }
-    }
+      sub: { label: "Single Cell Ref", tag: "Quicker!", href: "" } }
   ]
 };
-var Spatial = {
+
+var VisiumSpatial = {
   id:        "pipeline-spatial",
-  title:     "Xenium spatial pipeline",
-  titleHref: "xen.html",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "Density & Distance", 
-      img: "assets/index-ims/density.png",
-      href: ""},
-      
-    { label: "Niche Analysis",   
-      img: "assets/index-ims/lisaclust.png", 
-      href: "https://sydneybiox.github.io/lisaClust/articles/lisaClust.html"},
-    { label: "Neighborhood Analysis",  
-      img: "assets/index-ims/spicyr.png", 
-      href: "https://doi.org/10.1093/bioinformatics/btac268" },      
-    { label: "SpatioMark",  
-      img: "assets/index-ims/spatiomark.png", 
-      href: "https://academic.oup.com/bioinformatics/article/41/8/btaf409/8205670" },
-      
-    { label: "svg",  
-      img: "assets/index-ims/svg.png", 
-      href: "https://www.nature.com/articles/s41467-023-39748-z"}
+    { label: "Deconvolution",
+      img: "assets/index-ims/deconvolution.png",
+      href: "",
+      sub: { label: "Single Cell Ref", tag: "Required", href: "" } },
+    { label: "SVG",
+      img: "assets/index-ims/svg.png",
+      href: "https://www.nature.com/articles/s41467-023-39748-z" },
+    { label: "Domain Analysis",
+      img: "assets/index-ims/lisaclust.png",
+      href: "" },
+    { label: "Diff. Expression",
+      img: "assets/index-ims/de.png",
+      href: "" },
+    { label: "Pathway Analysis",
+      img: "assets/index-ims/module.png",
+      href: "" ,
+      sub:{label: "Module Scoring", tag: "Optional", href: ""}}
   ]
 };
 </script>
 ```
 
 
-### 1. Cell Segmentation
+### 1. Image Processing
 
 ```{=html}
 <div class="pipeline-wrap" id="pipeline-segment">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Segment);</script>
+<script>renderPipeline(VisiumSegment);</script>
 ```
 
-Generalised segmentation models, including those bundled with Xenium Ranger, are trained on idealised cell morphologies and fail systematically in complex tissue, precisely where accurate segmentation matters most. This **Cell Segmentation** module addresses this through a three-step workflow: automated image preprocessing to composite and optimise Xenium's multi-channel stains into a cellpose-compatible format; *optional* image registration is possible to align additionally acquired images; custom model training via the *Cellpose* GUI using tissue-specific image crops; and headless bulk segmentation across the full image set. An optional mask-merging step is available for tissues requiring separate segmentation strategies for distinct cell populations (for example, preserving large structural masks while selectively transferring immune cell boundaries from a second model).
-
+Visium's H&E image contains rich morphological information that, when properly extracted, contextualises and validates the transcriptional data captured in the same section. This **Image Processing** module prepares that image for quantitative use: tissue detection identifies the capture area and excludes background; image registration aligns the H&E to spot coordinates, with optional co-registration of fluorescent microscopy where available; compartmentalisation segments the tissue into morphologically distinct regions such as tumour, stroma, and necrosis; and cell identification characterises the cellular composition visible within the histology. Together these steps ground the transcriptional analysis in tissue architecture and enable morphology-informed interpretation downstream.
 
 ### 2. Data Processing
 
@@ -199,12 +189,10 @@ Generalised segmentation models, including those bundled with Xenium Ranger, are
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Process);</script>
+<script>renderPipeline(VisiumProcess);</script>
 ```
 
-Following segmentation, raw transcript counts must be processed into a form suitable for biological interpretation. This **Data Processing** module encompasses the core analytical steps shared across spatial transcriptomics pipelines: quality control to identify and remove low-quality cells or uninformative features; normalisation to correct for technical variation in capture efficiency and sequencing depth; clustering to partition cells into transcriptionally similar groups; and annotation to assign biological identity to those groups. Annotation can be performed manually through marker gene inspection, or accelerated using a curated single-cell reference dataset for automated label transfer.
-
-These steps are not spatial-specific, they are adapted from the mature single-cell RNA-seq toolkit, but their outputs directly enable the spatial analyses that follow, including niche identification, cell-cell interaction inference, and spatially variable gene detection.
+Following image processing, raw spot-level transcript counts must be prepared for biological interpretation. This **Data Processing** module applies the same core steps as the single-cell RNA-seq toolkit (quality control, normalisation, clustering, and annotation) at the resolution of Visium's 55µm capture spots rather than individual cells. The key distinction is that each spot captures a mixture of cells, so annotations describe the dominant transcriptional signal of a spot rather than a single cell identity. As with the Xenium pipeline, annotation can be performed manually or accelerated using a single-cell reference for automated label transfer, which also sets the stage for the deconvolution step that follows in spatial analysis.
 
 ### 3. Spatial Analysis
 
@@ -214,19 +202,18 @@ These steps are not spatial-specific, they are adapted from the mature single-ce
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Spatial);</script>
+<script>renderPipeline(VisiumSpatial);</script>
 ```
 
-With cells annotated and positioned in tissue space, this **Spatial Analysis** module leverages the coordinate information that distinguishes spatial transcriptomics from dissociated single-cell approaches. Analyses progress from descriptive to inferential:  
+Where data processing partitions spots by transcriptional similarity, this Spatial Analysis module asks explicitly spatial questions. 
 
-- **Density and distance** metrics characterise how cell types are distributed and how proximate they are to one another.
+- **Deconvolution** estimates the cellular composition of each spot using a single-cell reference, effectively recovering cell type proportions despite the absence of single-cell resolution. 
 
-- **Niche analysis** (e.g. lisaClust) identifies recurrent spatial domains defined by co-localising cell type combinations.
+- **Spatially variable gene** detection then identifies genes whose expression is structured across tissue space rather than explained by cell type alone. 
 
-- **Neighbourhood analysis** (e.g. spicyR) tests whether specific cell type pairings are statistically enriched or depleted relative to a random spatial baseline.
+- **Spatial domain** analysis groups spots into recurrent tissue niches based on both transcriptional and positional features. 
 
-- **SpatioMark** extends this by quantifying how the transcriptional state of a cell is shaped by its spatial context, moving beyond proximity to ask whether being near a particular cell type changes gene expression.
+- **Differential expression** compares transcriptional programs across regions, conditions, or tissue compartments. 
 
-- **Spatially variable gene** (SVG) detection identifies genes whose expression is structured across tissue space, independent of cell type, revealing transcriptional gradients and domain boundaries that annotation alone would miss.
-
+- **Pathway analysis** and module scoring place these differences in biological context, summarising coordinated gene programs into interpretable functional signatures.
 
