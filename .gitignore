@@ -9,12 +9,10 @@ analysis/*png
 analysis/*html
 analysis/*_cache
 analysis/site_libs
-docs/site_libs
 
 workflow.R
 *.Rproj
 analysis/data/
-analysis-user-group.Rproj
 data/
 plots/
 raw/
@@ -24,4 +22,4 @@ todo.R
 ignore/
 Functions/
 Analysis/archives
-*.html
+code

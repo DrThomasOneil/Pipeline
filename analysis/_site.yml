@@ -9,11 +9,7 @@ navbar:
   - text: Pipelines
     menu:
       - text: Xenium
-        href: xenium-index.html
-
-  - icon: fab fa-github
-    text: Source code
-    href: https://github.com/DrThomasOneil/
+        href: xen.html
 output:
   workflowr::wflow_html:
     toc: yes
