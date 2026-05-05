@@ -256,14 +256,44 @@ $(document).ready(function () {
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="xen.html">Xenium</a>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Spatial</a>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="xen.html">Xenium</a>
+        </li>
+        <li>
+          <a href="vis.html">Visium</a>
+        </li>
+        <li>
+          <a href="vishd.html">VisiumHD</a>
+        </li>
+      </ul>
+    </li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Single Cell</a>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="xen.html">Single Cell RNA</a>
+        </li>
+        <li>
+          <a href="xen.html">ATAC-Seq</a>
+        </li>
+        <li>
+          <a href="vis.html">TCR/BCR Sequencing</a>
+        </li>
+        <li>
+          <a href="vishd.html">Flow Cytometry</a>
+        </li>
+      </ul>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="platform.html">Choose a platform</a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -356,15 +386,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetreecf6b8eb33a0238d440fe123f3511fd4964b41cf6targetblankcf6b8eba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree8a510cb83e806b6cb45aa4996075113c790d81b9targetblank8a510cba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/cf6b8eb33a0238d440fe123f3511fd4964b41cf6" target="_blank">cf6b8eb</a>
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/8a510cb83e806b6cb45aa4996075113c790d81b9" target="_blank">8a510cb</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetreecf6b8eb33a0238d440fe123f3511fd4964b41cf6targetblankcf6b8eba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree8a510cb83e806b6cb45aa4996075113c790d81b9targetblank8a510cba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -374,7 +404,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/cf6b8eb33a0238d440fe123f3511fd4964b41cf6" target="_blank">cf6b8eb</a>.
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/8a510cb83e806b6cb45aa4996075113c790d81b9" target="_blank">8a510cb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -405,11 +435,7 @@ Ignored files:
     Ignored:    workflow.Rproj
 
 Unstaged changes:
-    Modified:   .gitignore
     Modified:   analysis/_site.yml
-    Modified:   analysis/adit/head.html
-    Deleted:    analysis/xenium-index.Rmd
-    Deleted:    analysis/xenium-segmentation.Rmd
 
 </code></pre>
 <p>
@@ -530,7 +556,8 @@ var Segment = {
     { label: "Image Processing", 
       img: "assets/index-ims/xen-im-proc.png",
       href: "", 
-      skipTo: 2.15},
+      skipTo: 2.15, 
+      sub: { label: "Registration", tag: "Optional", href: "" }},
     { label: "Cellpose training",   
       img: "assets/index-ims/cellpose-training.png", 
       href: "",
@@ -610,13 +637,14 @@ systematically in complex tissue, precisely where accurate segmentation
 matters most. This <strong>Cell Segmentation</strong> module addresses
 this through a three-step workflow: automated image preprocessing to
 composite and optimise Xenium’s multi-channel stains into a
-cellpose-compatible format; optional custom model training via the
-<em>Cellpose</em> GUI using tissue-specific image crops; and headless
-bulk segmentation across the full image set. An optional mask-merging
-step is available for tissues requiring separate segmentation strategies
-for distinct cell populations (for example, preserving large structural
-masks while selectively transferring immune cell boundaries from a
-second model).</p>
+cellpose-compatible format; <em>optional</em> image registration is
+possible to align additionally acquired images; custom model training
+via the <em>Cellpose</em> GUI using tissue-specific image crops; and
+headless bulk segmentation across the full image set. An optional
+mask-merging step is available for tissues requiring separate
+segmentation strategies for distinct cell populations (for example,
+preserving large structural masks while selectively transferring immune
+cell boundaries from a second model).</p>
 </div>
 <div id="data-processing" class="section level3">
 <h3>2. Data Processing</h3>

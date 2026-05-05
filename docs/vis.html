@@ -11,7 +11,7 @@
 
 
 
-<title>PrecisionGO</title>
+<title>vis.knit.md</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -311,8 +311,6 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><span
-style="display:none;">PrecisionGO</span></h1>
 
 </div>
 
@@ -460,20 +458,24 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 </div>
+<div id="visium-analysis-pipeline"
+class="section level2 tabset tabset-fade">
+<h2 class="tabset tabset-fade">Visium Analysis Pipeline</h2>
 <style>
-.pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; padding-left: 15px; }
-.pipeline-title { font-size: 24px; font-weight: 600; color: #555; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; display: inline-block; }
+.pipeline-outer { margin-left: 0; padding-left: 0; width: 100%; display: flex; flex-direction: column; align-items: flex-start; }
+.pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; width: 100%; }
+.pipeline-title { font-size: 18px; font-weight: 600; color: #555; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; display: inline-block; }
 .pipeline-title:hover { color: #111; text-decoration: underline; }
-.pipeline-flow { display: flex; align-items: flex-start; flex-wrap: wrap; }
+.pipeline-flow { display: flex; align-items: flex-start; flex-wrap: wrap; justify-content: flex-start; }
 .pipe-start { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 14px; }
 .pipe-start svg { width: 46px; height: 46px; opacity: 0.6; }
 .pipe-start span { font-size: 14px; color: #888; }
 .pipe-arrow { display: flex; align-items: center; padding-top: 35px; color: #ccc; }
 .pipe-arrow svg { width: 40px; height: 24px; }
-.pipe-node { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; width: 161px; transition: transform 0.15s; }
+.pipe-node { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; width: 130px; transition: transform 0.15s; }
 .pipe-node:hover { transform: translateY(-2px); }
 .pipe-node:hover .pipe-box { border-color: #666; }
-.pipe-box { border: 1px solid #ddd; border-radius: 14px; overflow: hidden; background: #f9f9f9; width: 144px; height: 115px; display: flex; align-items: center; justify-content: center; }
+.pipe-box { border: 1px solid #ddd; border-radius: 14px; overflow: hidden; background: #f9f9f9; width: 125px; height: 98px; display: flex; align-items: center; justify-content: center; }
 .pipe-box img { width: 100%; height: 100%; object-fit: cover; }
 .pipe-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 .pipe-placeholder svg { width: 40px; height: 40px; opacity: 0.18; }
@@ -484,7 +486,7 @@ There are no past versions. Publish this analysis with
 .pipe-sub-box:hover { border-color: #888; }
 .pipe-sub-tag { font-size: 11px; color: #aaa; background: #f0f0f0; border-radius: 3px; padding: 1px 6px; margin-bottom: 3px; }
 .pipe-sub-label { font-size: 13px; font-weight: 500; color: #666; text-align: center; line-height: 1.3; }
-.pipe-skip-arc { display: flex; align-items: flex-end; overflow: visible; padding-left: 15px; }
+.pipe-skip-arc { display: flex; align-items: flex-end; overflow: visible; justify-content: flex-start; }
 </style>
 
 <script>
@@ -546,78 +548,140 @@ function renderPipeline(config) {
 }
 </script>
 <script>
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium spatial pipeline",
-  titleHref: "xen.html",
+var VisiumSegment = {
+  id:        "pipeline-segment",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "Cell segmentation", 
-      img: "assets/index-ims/segment.png", 
-      href: "xen.html"},
-    { label: "Data processing",   
-      img: "assets/index-ims/annotation.png", 
-      href: "xen.html",
-    },
-    { label: "Spatial analysis",  
-      img: "assets/index-ims/density.png", 
-      href: "xen.html" },
+    { label: "Tissue Detection",
+      img: "assets/index-ims/tissue-detection.png",
+      href: "" },
+    { label: "Image Registration",
+      img: "assets/index-ims/registration.png",
+      href: "",
+      sub: { label: "Fluorescent Microscopy", tag: "Optional", href: "" } },
+    { label: "Compartmentalisation",
+      img: "assets/index-ims/compartment.png",
+      href: ""},
+    { label: "Cell Identification",
+      img: "assets/index-ims/cell-id.png",
+      href: "" }
   ]
 };
 
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium Spatial Pipeline",
-  titleHref: "vis.html",
+var VisiumProcess = {
+  id:        "pipeline-process",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "Image processing", img: "", href: "vis.html"},
-    { label: "Data processing",   img: "", href: "vis.html"},
-    { label: "Spatial analysis",  img: "", href: "vis.html" },
+    { label: "QC",
+      img: "assets/index-ims/qc_panel.png",
+      href: "" },
+    { label: "Normalisation",
+      img: "assets/index-ims/normalisation.png",
+      href: "" },
+    { label: "Clustering",
+      img: "assets/index-ims/clustering.png",
+      href: "" },
+    { label: "Annotation",
+      img: "assets/index-ims/annotation.png",
+      href: "",
+      sub: { label: "Single Cell Ref", tag: "Quicker!", href: "" } }
   ]
 };
 
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "VisiumHD Spatial Pipeline",
-  titleHref: "vishd.html",
+var VisiumSpatial = {
+  id:        "pipeline-spatial",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
   steps: [
-    { label: "Cell segmentation", 
-      img: "assets/index-ims/segment.png", 
-      href: "vishd.html"},
-    { label: "Data processing",   
-      img: "assets/index-ims/annotation.png", 
-      href: "vishd.html",
-    },
-    { label: "Spatial analysis",  
-      img: "assets/index-ims/density.png", 
-      href: "vishd.html" },
+    { label: "Deconvolution",
+      img: "assets/index-ims/deconvolution.png",
+      href: "",
+      sub: { label: "Single Cell Ref", tag: "Required", href: "" } },
+    { label: "SVG",
+      img: "assets/index-ims/svg.png",
+      href: "https://www.nature.com/articles/s41467-023-39748-z" },
+    { label: "Domain Analysis",
+      img: "assets/index-ims/lisaclust.png",
+      href: "" },
+    { label: "Diff. Expression",
+      img: "assets/index-ims/de.png",
+      href: "" },
+    { label: "Pathway Analysis",
+      img: "assets/index-ims/module.png",
+      href: "" ,
+      sub:{label: "Module Scoring", tag: "Optional", href: ""}}
   ]
 };
 </script>
-<div style="clear: both;">
-
-</div>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
+<div id="image-processing" class="section level3">
+<h3>1. Image Processing</h3>
+<div class="pipeline-wrap" id="pipeline-segment">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
-
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(VisiumSegment);</script>
+<p>Visium’s H&amp;E image contains rich morphological information that,
+when properly extracted, contextualises and validates the
+transcriptional data captured in the same section. This <strong>Image
+Processing</strong> module prepares that image for quantitative use:
+tissue detection identifies the capture area and excludes background;
+image registration aligns the H&amp;E to spot coordinates, with optional
+co-registration of fluorescent microscopy where available;
+compartmentalisation segments the tissue into morphologically distinct
+regions such as tumour, stroma, and necrosis; and cell identification
+characterises the cellular composition visible within the histology.
+Together these steps ground the transcriptional analysis in tissue
+architecture and enable morphology-informed interpretation
+downstream.</p>
+</div>
+<div id="data-processing" class="section level3">
+<h3>2. Data Processing</h3>
+<div class="pipeline-wrap" id="pipeline-process">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Visium);</script>
-
-<div class="pipeline-wrap" id="pipeline-vishd">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(VisiumProcess);</script>
+<p>Following image processing, raw spot-level transcript counts must be
+prepared for biological interpretation. This <strong>Data
+Processing</strong> module applies the same core steps as the
+single-cell RNA-seq toolkit (quality control, normalisation, clustering,
+and annotation) at the resolution of Visium’s 55µm capture spots rather
+than individual cells. The key distinction is that each spot captures a
+mixture of cells, so annotations describe the dominant transcriptional
+signal of a spot rather than a single cell identity. As with the Xenium
+pipeline, annotation can be performed manually or accelerated using a
+single-cell reference for automated label transfer, which also sets the
+stage for the deconvolution step that follows in spatial analysis.</p>
+</div>
+<div id="spatial-analysis" class="section level3">
+<h3>3. Spatial Analysis</h3>
+<div class="pipeline-wrap" id="pipeline-spatial">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
-<br>
-<hr>
+<script>renderPipeline(VisiumSpatial);</script>
+<p>Where data processing partitions spots by transcriptional similarity,
+this Spatial Analysis module asks explicitly spatial questions.</p>
+<ul>
+<li><p><strong>Deconvolution</strong> estimates the cellular composition
+of each spot using a single-cell reference, effectively recovering cell
+type proportions despite the absence of single-cell resolution.</p></li>
+<li><p><strong>Spatially variable gene</strong> detection then
+identifies genes whose expression is structured across tissue space
+rather than explained by cell type alone.</p></li>
+<li><p><strong>Spatial domain</strong> analysis groups spots into
+recurrent tissue niches based on both transcriptional and positional
+features.</p></li>
+<li><p><strong>Differential expression</strong> compares transcriptional
+programs across regions, conditions, or tissue compartments.</p></li>
+<li><p><strong>Pathway analysis</strong> and module scoring place these
+differences in biological context, summarising coordinated gene programs
+into interpretable functional signatures.</p></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>

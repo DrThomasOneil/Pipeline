@@ -461,163 +461,173 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 <style>
-.pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; padding-left: 15px; }
-.pipeline-title { font-size: 24px; font-weight: 600; color: #555; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; display: inline-block; }
-.pipeline-title:hover { color: #111; text-decoration: underline; }
-.pipeline-flow { display: flex; align-items: flex-start; flex-wrap: wrap; }
-.pipe-start { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 14px; }
-.pipe-start svg { width: 46px; height: 46px; opacity: 0.6; }
-.pipe-start span { font-size: 14px; color: #888; }
-.pipe-arrow { display: flex; align-items: center; padding-top: 35px; color: #ccc; }
-.pipe-arrow svg { width: 40px; height: 24px; }
-.pipe-node { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: inherit; width: 161px; transition: transform 0.15s; }
-.pipe-node:hover { transform: translateY(-2px); }
-.pipe-node:hover .pipe-box { border-color: #666; }
-.pipe-box { border: 1px solid #ddd; border-radius: 14px; overflow: hidden; background: #f9f9f9; width: 144px; height: 115px; display: flex; align-items: center; justify-content: center; }
-.pipe-box img { width: 100%; height: 100%; object-fit: cover; }
-.pipe-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-.pipe-placeholder svg { width: 40px; height: 40px; opacity: 0.18; }
-.pipe-label { margin-top: 8px; font-size: 14px; font-weight: 500; text-align: center; line-height: 1.3; max-width: 161px; color: #222; }
-.pipe-sub-col { display: flex; flex-direction: column; align-items: center; }
-.pipe-sub-line { width: 1px; height: 20px; background: #ddd; }
-.pipe-sub-box { border: 1px dashed #ccc; border-radius: 10px; background: #fff; width: 130px; padding: 7px 6px; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
-.pipe-sub-box:hover { border-color: #888; }
-.pipe-sub-tag { font-size: 11px; color: #aaa; background: #f0f0f0; border-radius: 3px; padding: 1px 6px; margin-bottom: 3px; }
-.pipe-sub-label { font-size: 13px; font-weight: 500; color: #666; text-align: center; line-height: 1.3; }
-.pipe-skip-arc { display: flex; align-items: flex-end; overflow: visible; padding-left: 15px; }
+  .dt-wrap { padding: 1.5rem 0.25rem; font-family: var(--font-sans); }
+  .dt-card {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.75rem 2rem;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+  }
+  .dt-card.fading { opacity: 0; }
+  .dt-step-label { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .dt-question { font-size: 17px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+  .dt-sub { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem; }
+  .dt-options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
+  .dt-btn {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .dt-btn:hover { background: #E1F5EE; border-color: #0F6E56; color: #085041; }
+  .dt-divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.25rem 0; }
+  .dt-breadcrumb { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+  .dt-crumb { font-size: 12px; padding: 3px 10px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); color: var(--color-text-secondary); }
+  .dt-crumb-sep { font-size: 12px; color: var(--color-text-tertiary); }
+  .dt-back { background: none; border: none; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; padding: 0; transition: color 0.15s; }
+  .dt-back:hover { color: var(--color-text-secondary); }
+  .dt-result-label { font-size: 11px; color: #0F6E56; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .dt-result-title { font-size: 24px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.75rem; }
+  .dt-result-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 1.25rem; }
+  .dt-restart { background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 8px 16px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: background 0.15s; }
+  .dt-restart:hover { background: var(--color-background-primary); }
 </style>
 
+<div class="dt-wrap">
+  <div class="dt-card" id="dt-card">
+    <div id="dt-inner"></div>
+  </div>
+</div>
+
 <script>
-var FOLDER = '<svg viewBox="0 0 40 40" fill="none"><path d="M4 12C4 10.3 5.3 9 7 9H16L19 13H33C34.7 13 36 14.3 36 16V30C36 31.7 34.7 33 33 33H7C5.3 33 4 31.7 4 30V12Z" fill="currentColor"/></svg>';
-var ARROW  = '<svg viewBox="0 0 28 16" fill="none"><line x1="2" y1="8" x2="22" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="15,3 24,8 15,13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-var PLACEHOLDER = '<svg viewBox="0 0 40 40" fill="none"><rect x="4" y="4" width="32" height="32" rx="6" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="15" r="3" stroke="currentColor" stroke-width="1.2"/><polyline points="4,28 13,19 20,26 26,20 36,30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+const tree = {
+  question: "What type of data are you capturing?",
+  sub: "Select the primary measurement modality for your experiment.",
+  options: [
+    {
+      label: "Transcriptomics",
+      next: {
+        question: "What spatial resolution do you need?",
+        sub: "Consider the biological question — do you need to resolve individual cells?",
+        options: [
+          {
+            label: "Single-cell resolution",
+            next: {
+              question: "Whole transcriptome or targeted panel?",
+              sub: "Targeted panels offer greater depth for known genes; whole transcriptome is hypothesis-free.",
+              options: [
+                { label: "Whole transcriptome", result: "VisiumHD" },
+                { label: "Targeted panel",      result: "Xenium" }
+              ]
+            }
+          },
+          { label: "Spot-based resolution", result: "Visium" },
+          { label: "User-defined ROI",      result: "GeoMx" }
+        ]
+      }
+    },
+    {
+      label: "Proteomics",
+      next: {
+        question: "How many protein targets do you need?",
+        sub: "High-parameter panels (40+) require different instrumentation than standard mIF.",
+        options: [
+          { label: "High-parameter (40+ markers)", result: "COMET" },
+          { label: "Low-parameter (<10 markers)",  result: "mIF" }
+        ]
+      }
+    }
+  ]
+};
 
-function renderPipeline(config) {
-  var wrap = document.getElementById(config.id);
-  if (!wrap) return;
+const descriptions = {
+  "VisiumHD": "Visium HD captures whole-transcriptome data at 2µm bin resolution, enabling near-single-cell spatial analysis across a large capture area. Best suited for discovery-driven experiments where cell-level resolution and transcriptome-wide coverage are both required.",
+  "Xenium":   "Xenium provides single-cell resolution spatial transcriptomics using targeted in situ sequencing. Ideal when your gene panel is defined and you need high sensitivity, subcellular resolution, or large tissue coverage across multiple sections.",
+  "Visium":   "Standard Visium captures whole-transcriptome data at 55µm spot resolution. Each spot contains a mixture of cells, so deconvolution is required to infer cell type composition. Well-suited for large-area tissue profiling where single-cell resolution is not required.",
+  "GeoMx":    "GeoMx DSP enables spatially resolved transcriptomics or proteomics from user-selected regions of interest. Ideal for hypothesis-driven experiments targeting specific tissue compartments identified by morphology or marker expression.",
+  "COMET":    "COMET enables high-parameter spatial proteomics (40–100+ markers) with single-cell resolution. Suited for deep immune profiling and complex tissue microenvironment characterisation.",
+  "mIF":      "Multiplex immunofluorescence supports low-parameter spatial proteomics (typically 4–8 markers) with high sensitivity and spatial resolution. Best for targeted validation, clinical samples, or when throughput and cost are priorities."
+};
 
-  var titleEl = wrap.querySelector('.pipeline-title');
-  if (titleEl) { titleEl.textContent = config.title; titleEl.href = config.titleHref || '#'; }
+let path = [];
+let current = tree;
 
-  var skips = [];
-  config.steps.forEach(function(s, i) {
-    if (s.skipTo !== undefined) skips.push({ from: i, to: s.skipTo });
-  });
+function transition(renderFn) {
+  const card = document.getElementById('dt-card');
+  card.classList.add('fading');
+  setTimeout(() => {
+    renderFn();
+    card.classList.remove('fading');
+  }, 220);
+}
 
-  var arcRow = wrap.querySelector('.pipe-skip-arc');
-  if (arcRow && skips.length > 0) {
-    var stepW = 161 + 40;
-    var startOffset = 58;
-    var svgW = startOffset + (config.steps.length * stepW) + 20;
-    var svgH = 32;
-    var paths = skips.map(function(sk) {
-      var x1 = startOffset + sk.from * stepW + 80;
-      var x2 = startOffset + sk.to  * stepW + 80;
-      var r  = 10;
-      return '<path d="M' + x1 + ' ' + svgH + ' L' + x1 + ' ' + r + ' Q' + x1 + ' 0 ' + (x1+r) + ' 0 L' + (x2-r) + ' 0 Q' + x2 + ' 0 ' + x2 + ' ' + r + ' L' + x2 + ' ' + svgH + '" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3" fill="none" marker-end="url(#skip-arrow-' + config.id + ')"/>';
-    }).join('');
-    arcRow.innerHTML = '<svg width="' + svgW + '" height="' + svgH + '" viewBox="0 0 ' + svgW + ' ' + svgH + '" overflow="visible"><defs><marker id="skip-arrow-' + config.id + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>' + paths + '</svg>';
+function render() {
+  const inner = document.getElementById('dt-inner');
+  const bcHtml = path.length > 0
+    ? `<div class="dt-breadcrumb">${path.map((p, i) =>
+        (i < path.length - 1)
+          ? `<span class="dt-crumb">${p.choice}</span><span class="dt-crumb-sep">›</span>`
+          : `<span class="dt-crumb">${p.choice}</span>`
+      ).join('')}</div>`
+    : '';
+
+  if (current.result) {
+    const name = current.result;
+    inner.innerHTML = `
+      ${bcHtml}
+      <div class="dt-divider" style="margin-top:0;"></div>
+      <div class="dt-result-label">Recommended technology</div>
+      <div class="dt-result-title">${name}</div>
+      <div class="dt-result-desc">${descriptions[name]}</div>
+      <button class="dt-restart" onclick="doRestart()">← Start over</button>
+    `;
+    return;
   }
 
-  var flowEl = wrap.querySelector('.pipeline-flow');
-  var html = '<div class="pipe-start">' + FOLDER + '<span>Data</span></div>';
-
-  config.steps.forEach(function(s) {
-    html += '<div class="pipe-arrow">' + ARROW + '</div>';
-
-    var nodeInner = '<div class="pipe-box">' +
-      (s.img ? '<img src="' + s.img + '" alt="' + s.label + '">' : '<div class="pipe-placeholder">' + PLACEHOLDER + '</div>') +
-      '</div><span class="pipe-label">' + s.label + '</span>';
-
-    if (s.sub) {
-      html += '<div class="pipe-sub-col">';
-      html += '<a class="pipe-node" href="' + (s.href || '#') + '">' + nodeInner + '</a>';
-      html += '<div class="pipe-sub-line"></div>';
-      html += '<a class="pipe-sub-box" href="' + (s.sub.href || '#') + '">';
-      if (s.sub.tag) html += '<span class="pipe-sub-tag">' + s.sub.tag + '</span>';
-      html += '<span class="pipe-sub-label">' + s.sub.label + '</span></a>';
-      html += '</div>';
-    } else {
-      html += '<a class="pipe-node" href="' + (s.href || '#') + '">' + nodeInner + '</a>';
-    }
-  });
-
-  flowEl.innerHTML = html;
+  const stepNum = path.length + 1;
+  inner.innerHTML = `
+    ${bcHtml}
+    ${path.length > 0 ? '<div class="dt-divider" style="margin-top:0;"></div>' : ''}
+    <div class="dt-step-label">Step ${stepNum}</div>
+    <div class="dt-question">${current.question}</div>
+    <div class="dt-sub">${current.sub || ''}</div>
+    <div class="dt-options">
+      ${current.options.map((opt, i) =>
+        `<button class="dt-btn" onclick="doChoose(${i})">${opt.label}</button>`
+      ).join('')}
+    </div>
+    ${path.length > 0 ? `<button class="dt-back" onclick="doBack()">← Back</button>` : ''}
+  `;
 }
+
+function doChoose(i) {
+  const opt = current.options[i];
+  path.push({ choice: opt.label, node: current });
+  current = opt.next || { result: opt.result };
+  transition(render);
+}
+
+function doBack() {
+  const prev = path.pop();
+  current = prev.node;
+  transition(render);
+}
+
+function doRestart() {
+  path = [];
+  current = tree;
+  transition(render);
+}
+
+render();
 </script>
-<script>
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium spatial pipeline",
-  titleHref: "xen.html",
-  steps: [
-    { label: "Cell segmentation", 
-      img: "assets/index-ims/segment.png", 
-      href: "xen.html"},
-    { label: "Data processing",   
-      img: "assets/index-ims/annotation.png", 
-      href: "xen.html",
-    },
-    { label: "Spatial analysis",  
-      img: "assets/index-ims/density.png", 
-      href: "xen.html" },
-  ]
-};
-
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium Spatial Pipeline",
-  titleHref: "vis.html",
-  steps: [
-    { label: "Image processing", img: "", href: "vis.html"},
-    { label: "Data processing",   img: "", href: "vis.html"},
-    { label: "Spatial analysis",  img: "", href: "vis.html" },
-  ]
-};
-
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "VisiumHD Spatial Pipeline",
-  titleHref: "vishd.html",
-  steps: [
-    { label: "Cell segmentation", 
-      img: "assets/index-ims/segment.png", 
-      href: "vishd.html"},
-    { label: "Data processing",   
-      img: "assets/index-ims/annotation.png", 
-      href: "vishd.html",
-    },
-    { label: "Spatial analysis",  
-      img: "assets/index-ims/density.png", 
-      href: "vishd.html" },
-  ]
-};
-</script>
-<div style="clear: both;">
-
-</div>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(Xenium);</script>
-
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(Visium);</script>
-
-<div class="pipeline-wrap" id="pipeline-vishd">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(VisiumHD);</script>
-<br>
-<hr>
+<p>```</p>
 </div>
 </div>
 </div>
