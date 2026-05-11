@@ -11,7 +11,7 @@
 
 
 
-<title>PrecisionGo</title>
+<title>What to Expect</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -331,8 +331,8 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><span
-style="display:none;">PrecisionGo</span></h1>
+<h1 class="title toc-ignore"><span style="display:none;">What to
+Expect</span></h1>
 
 </div>
 
@@ -486,179 +486,189 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 </div>
-<style>
-  .dt-wrap { padding: 1.5rem 0.25rem; font-family: var(--font-sans); }
-  .dt-card {
-    background: var(--color-background-secondary);
-    border: 0.5px solid var(--color-border-tertiary);
-    border-radius: var(--border-radius-lg);
-    padding: 1.75rem 2rem;
-    opacity: 1;
-    transition: opacity 0.25s ease;
-  }
-  .dt-card.fading { opacity: 0; }
-  .dt-step-label { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.5rem; }
-  .dt-question { font-size: 17px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
-  .dt-sub { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem; }
-  .dt-options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
-  .dt-btn {
-    background: var(--color-background-primary);
-    border: 0.5px solid var(--color-border-secondary);
-    border-radius: var(--border-radius-md);
-    padding: 10px 20px;
-    font-size: 14px;
-    color: var(--color-text-primary);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-  }
-  .dt-btn:hover { background: #E1F5EE; border-color: #0F6E56; color: #085041; }
-  .dt-divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.25rem 0; }
-  .dt-breadcrumb { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
-  .dt-crumb { font-size: 12px; padding: 3px 10px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); color: var(--color-text-secondary); }
-  .dt-crumb-sep { font-size: 12px; color: var(--color-text-tertiary); }
-  .dt-back { background: none; border: none; font-size: 13px; color: var(--color-text-tertiary); cursor: pointer; padding: 0; transition: color 0.15s; }
-  .dt-back:hover { color: var(--color-text-secondary); }
-  .dt-result-label { font-size: 11px; color: #0F6E56; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.5rem; }
-  .dt-result-title { font-size: 24px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.75rem; }
-  .dt-result-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 1.25rem; }
-  .dt-restart { background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 8px 16px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: background 0.15s; }
-  .dt-restart:hover { background: var(--color-background-primary); }
-</style>
+<div style="clear: both;">
 
-<div class="dt-wrap">
-  <div class="dt-card" id="dt-card">
-    <div id="dt-inner"></div>
-  </div>
 </div>
-
-<script>
-const tree = {
-  question: "What type of data are you capturing?",
-  sub: "Select the primary measurement modality for your experiment.",
-  options: [
-    {
-      label: "Transcriptomics",
-      next: {
-        question: "What spatial resolution do you need?",
-        sub: "Consider the biological question — do you need to resolve individual cells?",
-        options: [
-          {
-            label: "Single-cell resolution",
-            next: {
-              question: "Whole transcriptome or targeted panel?",
-              sub: "Targeted panels offer greater depth for known genes; whole transcriptome is hypothesis-free.",
-              options: [
-                { label: "Whole transcriptome", result: "VisiumHD" },
-                { label: "Targeted panel",      result: "Xenium" }
-              ]
-            }
-          },
-          { label: "Spot-based resolution", result: "Visium" },
-          { label: "User-defined ROI",      result: "GeoMx" }
-        ]
-      }
-    },
-    {
-      label: "Proteomics",
-      next: {
-        question: "How many protein targets do you need?",
-        sub: "High-parameter panels (40+) require different instrumentation than standard mIF.",
-        options: [
-          { label: "High-parameter (40+ markers)", result: "COMET" },
-          { label: "Low-parameter (<10 markers)",  result: "mIF" }
-        ]
-      }
-    }
-  ]
-};
-
-const descriptions = {
-  "VisiumHD": "Visium HD captures whole-transcriptome data at 2µm bin resolution, enabling near-single-cell spatial analysis across a large capture area. Best suited for discovery-driven experiments where cell-level resolution and transcriptome-wide coverage are both required.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The 10X protocol allows for single round multiplex immunofluorescent imaging.<br><br><a href='vishd.html'>See the analysis pipeline for details</a>",
-  
-  "Xenium":   "Xenium provides single-cell resolution spatial transcriptomics using targeted in situ sequencing. Ideal when your gene panel is defined and you need high sensitivity, subcellular resolution, or large tissue coverage across multiple sections.<br><br><strong>Is this compatible with multiomics?</strong><br>Yes. Following the Xenium protocol, slides can be returned to the user and stained for proteomics. The caveat is that the 10X protocol may affect tissue integrity and/or the markers themselves.<br><br><a href='xen.html'>See the analysis pipeline for details</a>",
-  
-  "Visium":   "Standard Visium captures whole-transcriptome data at 55µm spot resolution. Each spot contains a mixture of cells, so deconvolution is required to infer cell type composition. Well-suited for large-area tissue profiling where single-cell resolution is not required.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The 10X protocol allows for single round multiplex immunofluorescent imaging.<br><br><a href='vis.html'>See the analysis pipeline for details</a>",
-  
-  "GeoMx":    "GeoMx DSP enables spatially resolved transcriptomics or proteomics from user-selected regions of interest. Ideal for hypothesis-driven experiments targeting specific tissue compartments identified by morphology or marker expression.<br><br><strong>Is this compatible with multiomics?</strong><br>Slightly. The GeoMx protocol allows for single round multiplex immunofluorescent imaging for contextual ROI selection.<br><br><a href='geomx.html'>See the analysis pipeline for details</a>",
-  
-  "COMET":    "COMET enables high-parameter spatial proteomics (40–100+ markers) with single-cell resolution. Suited for deep immune profiling and complex tissue microenvironment characterisation.",
-  
-  "mIF":      "Multiplex immunofluorescence supports low-parameter spatial proteomics (typically 4–8 markers) with high sensitivity and spatial resolution. Best for targeted validation, clinical samples, or when throughput and cost are priorities."
-};
-
-let path = [];
-let current = tree;
-
-function transition(renderFn) {
-  const card = document.getElementById('dt-card');
-  card.classList.add('fading');
-  setTimeout(() => {
-    renderFn();
-    card.classList.remove('fading');
-  }, 220);
-}
-
-function render() {
-  const inner = document.getElementById('dt-inner');
-  const bcHtml = path.length > 0
-    ? `<div class="dt-breadcrumb">${path.map((p, i) =>
-        (i < path.length - 1)
-          ? `<span class="dt-crumb">${p.choice}</span><span class="dt-crumb-sep">›</span>`
-          : `<span class="dt-crumb">${p.choice}</span>`
-      ).join('')}</div>`
-    : '';
-
-  if (current.result) {
-    const name = current.result;
-    inner.innerHTML = `
-      ${bcHtml}
-      <div class="dt-divider" style="margin-top:0;"></div>
-      <div class="dt-result-label">Recommended technology</div>
-      <div class="dt-result-title">${name}</div>
-      <div class="dt-result-desc">${descriptions[name]}</div>
-      <button class="dt-restart" onclick="doRestart()">← Start over</button>
-    `;
-    return;
-  }
-
-  const stepNum = path.length + 1;
-  inner.innerHTML = `
-    ${bcHtml}
-    ${path.length > 0 ? '<div class="dt-divider" style="margin-top:0;"></div>' : ''}
-    <div class="dt-step-label">Step ${stepNum}</div>
-    <div class="dt-question">${current.question}</div>
-    <div class="dt-sub">${current.sub || ''}</div>
-    <div class="dt-options">
-      ${current.options.map((opt, i) =>
-        `<button class="dt-btn" onclick="doChoose(${i})">${opt.label}</button>`
-      ).join('')}
-    </div>
-    ${path.length > 0 ? `<button class="dt-back" onclick="doBack()">← Back</button>` : ''}
-  `;
-}
-
-function doChoose(i) {
-  const opt = current.options[i];
-  path.push({ choice: opt.label, node: current });
-  current = opt.next || { result: opt.result };
-  transition(render);
-}
-
-function doBack() {
-  const prev = path.pop();
-  current = prev.node;
-  transition(render);
-}
-
-function doRestart() {
-  path = [];
-  current = tree;
-  transition(render);
-}
-
-render();
-</script>
-<p>```</p>
+<div style="text-align: center">
+<p><span style="font-size: 24px; font-weight: 600;">Precision
+Bioinformatics: How Our Pipelines Work</span> <br> <span
+style="font-size: 18px; color: #888; font-style: italic;">A guide to how
+PrecisionGO pipelines are designed, delivered, and customised to your
+research.</span></p>
+</div>
+<div style="width: 20%; margin: 0 auto;">
+<hr>
+</div>
+<p>The overarching goal of PrecisionGO is to accelerate research ➤ from
+<strong>samples</strong> to <strong>data</strong> to
+<strong>publication</strong> ➤ as <em>quickly</em> and as
+<em>effectively</em> as possible. Central to this is the <strong>Digital
+Platform</strong>: a bioinformatic-guided framework designed to balance
+the specific needs of individual projects with an overarching commitment
+to efficiency, reproducibility, and quality. The analysis pipelines
+documented here are one component of that platform, alongside metadata
+standards, reference databases, and standardised reporting.</p>
+<p>In practice, the pipeline service operates as a collaboration.
+Researchers engage through Scientific Platforms, where a single point of
+contact coordinates project intake, scopes the analysis, and connects
+the project to the bioinformatics team. From there, the bioinformatician
+works directly with the researcher; Not just to execute the analysis,
+but to interpret results, iterate on findings, and deliver outputs that
+are documented, reproducible, and ready for publication.</p>
+<p>The pipelines currently available reflect the technologies most
+actively used across the institute, and the catalogue continues to
+expand in response to researcher demand. If you don’t see a pipeline
+that fits your data or question, reach out — custom analyses are scoped
+regularly, and pipelines built to standard become part of the catalogue
+for future users.</p>
+<details>
+<summary>
+<span style="font-size: 18px; color: black; font-style: italic;">WHAT IS
+A PIPELINE?</span>
+</summary>
+<p>We are not designing automated workflows. The word
+<strong>pipeline</strong> carries that connotation in some contexts,
+implying raw data goes in one end and a result comes out the other with
+little in between. That is not what we mean, and it is worth being
+direct about that distinction.</p>
+<p>What we mean by a pipeline is a detailed, standardised series of
+steps, organised into logical <strong>modules</strong>, that defines how
+an analysis is performed, why each decision is made, and what
+constitutes an acceptable result at each stage. Each step within a
+module has defined inputs and outputs, documented code, described
+quality control interpretations, and identified touch points where the
+bioinformatician and researcher interact.</p>
+<p>Each <strong>module</strong> consisting of several step has been
+curated from several years of collective experience across projects,
+technologies, and biological questions. Where a <em>conventional
+workflow</em> might describe what to do, and a <em>conventional
+pipeline</em> might automate how to do it, our framework does both,
+<strong><em>and</em></strong> adds a third layer: <em>a set of rules and
+standards that governs how pipelines are designed, expanded, and
+updated</em>. This allows for pipelines to outlast individuals, where
+over time, pipelines can be interrogated, extended, or redesigned using
+the same standards, the same documentation expectations, and the same
+quality thresholds. This framework allows each pipeline to become a
+reliable, robust institutional asset, not just personal scripts.</p>
+<p>This also means the catalogue is <strong>adaptable</strong>. New
+technologies, new tools, and new biological questions will continue to
+emerge, and the framework is designed to absorb them without
+compromising the rigour or consistency of what already exists.</p>
+</details>
+<div style="width: 20%; margin: 0 auto;">
+<hr>
+</div>
+<details>
+<summary>
+<span style="font-size: 18px; color: black; font-style: italic;">WHAT
+CAN I EXPECT WHEN REQUESTING A PIPELINE?</span>
+</summary>
+<p>Pipeline requests are scoped and delivered through Scientific
+Platforms. The process is organised into three stages:</p>
+<p><strong>Before analysis</strong></p>
+<p>Prior to any analytical work, the bioinformatician is involved in the
+early stages of your project. This includes an initial consultation to
+scope the analysis, clarify biological questions, and confirm data
+suitability. Where needed, the bioinformatician can contribute to
+experimental design to ensure the data generated is appropriate for the
+intended analysis. Data transfer and raw data processing
+(e.g. CellRanger, SpaceRanger, XeniumRanger, etc) are standard at this
+stage, though groups arriving with existing count matrices can exclude
+this.</p>
+<p><strong>Analysis</strong></p>
+<p>The requested pipeline is executed according to the documented
+standards described here. At the close of analysis, the bioinformatician
+presents the results in a follow-up meeting, walking through the
+analysis, findings, and interpretations together with the
+researcher.</p>
+<p><strong>After analysis</strong></p>
+<p>Depending on the needs of your project, the following can be
+requested as additional services:</p>
+<ul>
+<li><p>Reproducible report generation</p></li>
+<li><p>Additional interpretation consultations</p></li>
+<li><p>A hosted or transferable workflowr page of the complete
+analysis</p></li>
+<li><p>Follow-up visualisation requests</p></li>
+<li><p>Manuscript preparation support</p></li>
+</ul>
+<p><em>Timelines vary by pipeline complexity and are agreed upon during
+the initial consultation.</em></p>
+</details>
+<div style="width: 20%; margin: 0 auto;">
+<hr>
+</div>
+<details>
+<summary>
+<span style="font-size: 18px; color: black; font-style: italic;">WHO IS
+DESIGNING THE PIPELINES?</span>
+</summary>
+<p>The pipelines are designed and maintained by the bioinformatian, Dr
+Thomas O’Neil, on the PrecisionGo team at the Westmead Institute for
+Medical Research. Dr. O’Neil works closely with bioinformatic
+collaborators on the project, including Dr’s Brian Gloss and Ellis
+Patrick, to challenge and improve each pipeline’s design and validation,
+and ultimate deployment. The team brings a combined background in
+experimental biology and computational analysis; <strong><em>a
+combination that is deliberate</em></strong>. Understanding the biology
+that generates the data is as important as understanding the tools that
+analyse it, and that dual perspective shapes every pipeline design
+decision.</p>
+<p>The framework itself was developed to ensure that pipeline quality is
+not dependent on any single individual. Each pipeline is documented,
+version-controlled, and built to a defined standard, meaning the
+catalogue can be interrogated, extended, and maintained as the team
+evolves over time.</p>
+<p><strong>Pipeline development</strong> is an active and ongoing
+process, driven in part by the technologies and questions most
+frequently brought to the team by researchers across the institute. If
+you are working with a technology or analytical question not currently
+represented in the catalogue, reach out; new pipelines are scoped and
+developed regularly.</p>
+</details>
+<div style="width: 20%; margin: 0 auto;">
+<hr>
+</div>
+<details>
+<summary>
+<span style="font-size: 18px; color: black; font-style: italic;">HOW ARE
+PIPELINES DESIGNED AND DEVELOPED?</span>
+</summary>
+<p>Pipeline development begins with what already exists. Established
+workflows from the literature, tool documentation, and prior projects
+serve as templates, but rather than adopting any single workflow
+wholesale, the focus is on identifying the strongest components from
+across those templates and integrating them into a coherent,
+standardised module. This is where the <em>framework</em> earns its
+value: <strong>modularisation</strong> rules ensure that each component
+has clearly defined inputs and outputs, so that modules from different
+origins slot together without the friction that typically accumulates
+when workflows are stitched together project by project.</p>
+<p>In practice, <strong>new pipelines are prioritised</strong> based on
+researcher demand and developed iteratively; outlined, coded, validated
+against public or development data, and tested on incoming projects
+before being formally deployed to Scientific Platforms. Pipelines are
+reviewed annually to incorporate new tools, updated best practices, and
+feedback from use.</p>
+<p><strong><em>Customisation</em></strong> is a natural consequence of
+this structure. Because pipelines are modular, analyses can be scoped to
+include only the steps relevant to your biological question, ultimately
+reducing time, cost, and interpretive noise. Parameters are adjusted to
+fit the biology of your data, not left at defaults. And where a project
+raises a question that no existing module addresses, a <strong>new
+module</strong> can be designed to the same standard and integrated into
+the pipeline without disrupting what surrounds it.</p>
+<p>The result is an analytical service that improves with every project
+that passes through it.</p>
+</details>
+<div style="width: 20%; margin: 0 auto;">
+<hr>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>

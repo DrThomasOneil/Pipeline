@@ -11,7 +11,7 @@
 
 
 
-<title>Spatial</title>
+<title>Single Cell RNA</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -438,8 +438,8 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><span
-style="display:none;">Spatial</span></h1>
+<h1 class="title toc-ignore"><span style="display:none;">Single Cell
+RNA</span></h1>
 
 </div>
 
@@ -677,6 +677,9 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 </div>
+<div id="single-cell-analysis-pipeline"
+class="section level2 tabset tabset-fade">
+<h2 class="tabset tabset-fade">Single Cell Analysis Pipeline</h2>
 <!-- Init -->
 <style>
 .pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; padding-left: 15px; }
@@ -1202,111 +1205,125 @@ var scTranscriptomics = {
   ]
 };
 </script>
-<!---Index--->
-
-<script>
-
-<!-- Spatial -->
-
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium",
-  titleHref: "spat_xen.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "assets/index-ims/segment.png",
-      href: "spat_xen.html"},
-    { label: "Data processing",
-      img: "assets/index-ims/annotation.png",
-      href: "spat_xen.html",
-    },
-    { label: "Spatial analysis",
-      img: "assets/index-ims/density.png",
-      href: "spat_xen.html" },
-  ]
-};
-
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium",
-  titleHref: "spat_vis.html",
-  steps: [
-    { label: "Spot Alignment and QC", img: "", href: "spat_vis.html"},
-    { label: "Data processing",   img: "", href: "spat_vis.html"},
-    { label: "Spatial analysis",  img: "", href: "spat_vis.html" },
-  ]
-};
-
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "Visium HD",
-  titleHref: "spat_vishd.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_vishd.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_vishd.html", sub:
-        { label: "Bin Resolution", tag: "2µm / 8µm / 16µm", href: "spat_vishd.html" },
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_vishd.html" },
-  ]
-};
-
-var mIF = {
-  id:        "pipeline-mIF",
-  title:     "Multiplexed Immunofluorescence",
-  titleHref: "spat_if.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_if.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_if.html",
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_if.html" },
-  ]
-};
-
-</script>
-<div style="clear: both;">
-
-</div>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
+<div id="qc-and-processing" class="section level3">
+<h3>1. QC and Processing</h3>
+<div class="pipeline-wrap" id="sc-qcprocess">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
-
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(scQCProcess);</script>
+<p>Raw single-cell sequencing data contains technical noise that, if
+uncorrected, propagates through every downstream step. This QC and
+Processing module removes that noise and prepares a clean, comparable
+feature space for analysis.</p>
+<ul>
+<li><strong>Ambient RNA removal</strong> corrects for free-floating
+transcripts captured alongside cells during droplet formation, which
+otherwise inflate or distort gene expression profiles;<br />
+</li>
+<li><strong>Cell QC</strong> filters low-quality cells by transcript
+count, gene count, and mitochondrial fraction, with doublet detection
+identifying and excluding droplets containing two cells rather than
+one;<br />
+</li>
+<li><strong>Normalisation</strong> accounts for differences in
+sequencing depth across cells, placing them on a comparable scale;
+and<br />
+</li>
+<li><strong>Feature selection</strong>, <strong>dimensionality
+reduction</strong> and <strong>clustering</strong> identify the most
+informative genes and compress the high-dimensional expression matrix
+into a structure that reveals cell population architecture.</li>
+</ul>
+<p>Together these steps produce a clean, reduced representation of the
+data on which all biological interpretation depends.</p>
+</div>
+<div id="integration" class="section level3">
+<h3>2. Integration</h3>
+<div class="pipeline-wrap" id="sc-integration">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Visium);</script>
-
-<div class="pipeline-wrap" id="pipeline-vishd">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(scIntegration);</script>
+<p>When single-cell data is collected across multiple samples, batches,
+or experimental conditions, technical variation between runs can obscure
+genuine biological differences. This <strong>Data Integration</strong>
+module aligns datasets into a shared embedding without removing
+biological signal.</p>
+<ul>
+<li><strong>Batch correction</strong> identifies and removes systematic
+technical effects using methods such as Harmony or scVI, with optional
+integration of public reference datasets to contextualise findings
+within the broader literature;<br />
+</li>
+<li><strong>Dimensionality reduction and clustering</strong> are then
+re-applied to the corrected embedding, producing cell groupings that
+reflect biology rather than batch.</li>
+</ul>
+<p>Integration is not always necessary (single-sample analyses proceed
+directly from QC and Processing to Annotation) but it is essential for
+any multi-donor, multi-condition, or multi-platform experiment.</p>
+</div>
+<div id="data-annotation" class="section level3">
+<h3>3. Data Annotation</h3>
+<div class="pipeline-wrap" id="sc-annotation">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
-
-<div class="pipeline-wrap" id="pipeline-mIF">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(scAnnotation);</script>
+<p>Clustering groups cells by transcriptional similarity but assigns no
+biological identity. This <strong>Data Annotation</strong> module
+interprets those clusters in terms of known cell types and states.</p>
+<ul>
+<li><strong>Marker identification</strong> extracts the genes that best
+distinguish each cluster, providing the base for annotation decisions
+and visualisation;<br />
+</li>
+<li><strong>Reference mapping</strong> compares the query dataset
+against a curated single-cell reference atlas, enabling automated or
+semi-automated label transfer that accelerates annotation, particularly
+for well-characterised tissues; and<br />
+</li>
+<li><strong>Cell type annotation</strong> assigns final identities to
+clusters, drawing on marker evidence, reference labels, and domain
+knowledge.</li>
+</ul>
+<p>Annotation is an inherently iterative step. Clusters are frequently
+re-examined, split, or merged as biological interpretation develops. The
+quality of annotation directly determines the interpretability of all
+downstream analysis.</p>
+</div>
+<div id="transcriptomic-analysis" class="section level3">
+<h3>4. Transcriptomic Analysis</h3>
+<div class="pipeline-wrap" id="sc-transcriptomics">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(mIF);</script>
-<br>
-<hr>
+<script>renderPipeline(scTranscriptomics);</script>
+<p>With cells annotated, this Transcriptomics Analysis module asks what
+those cells are doing and how they relate to one another across
+conditions, time, or disease state.</p>
+<ul>
+<li><strong>Differential expression</strong> identifies genes that are
+systematically up- or down-regulated between cell types, conditions, or
+tissue compartments, forming the primary evidence base for biological
+claims;<br />
+</li>
+<li><strong>Pathway analysis</strong> and <strong>module
+scoring</strong> place those gene lists in functional context,
+summarising coordinated transcriptional programs into interpretable
+biological signatures;<br />
+</li>
+<li><strong>Trajectory analysis</strong> orders cells along continuous
+developmental or activation paths, reconstructing dynamic processes such
+as differentiation, activation, or exhaustion from a static snapshot;
+and<br />
+</li>
+<li><strong>Cell-cell communication</strong> infers signalling
+interactions between cell types by identifying co-expressed
+ligand-receptor pairs, revealing how populations coordinate behaviour
+within a tissue or niche.</li>
+</ul>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1348,6 +1365,8 @@ loaded via a namespace (and not attached):
 [33] digest_0.6.39     R6_2.6.1          pillar_1.11.1     callr_3.7.6      
 [37] magrittr_2.0.5    bslib_0.10.0      tools_4.5.1       cachem_1.1.0     
 [41] getPass_0.2-4    </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

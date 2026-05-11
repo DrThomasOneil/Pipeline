@@ -11,7 +11,7 @@
 
 
 
-<title>Spatial</title>
+<title>Xenium</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -439,7 +439,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore"><span
-style="display:none;">Spatial</span></h1>
+style="display:none;">Xenium</span></h1>
 
 </div>
 
@@ -677,6 +677,9 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 </div>
+<div id="xenium-analysis-pipeline"
+class="section level2 tabset tabset-fade">
+<h2 class="tabset tabset-fade">Xenium Analysis Pipeline</h2>
 <!-- Init -->
 <style>
 .pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; padding-left: 15px; }
@@ -1202,111 +1205,83 @@ var scTranscriptomics = {
   ]
 };
 </script>
-<!---Index--->
-
-<script>
-
-<!-- Spatial -->
-
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium",
-  titleHref: "spat_xen.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "assets/index-ims/segment.png",
-      href: "spat_xen.html"},
-    { label: "Data processing",
-      img: "assets/index-ims/annotation.png",
-      href: "spat_xen.html",
-    },
-    { label: "Spatial analysis",
-      img: "assets/index-ims/density.png",
-      href: "spat_xen.html" },
-  ]
-};
-
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium",
-  titleHref: "spat_vis.html",
-  steps: [
-    { label: "Spot Alignment and QC", img: "", href: "spat_vis.html"},
-    { label: "Data processing",   img: "", href: "spat_vis.html"},
-    { label: "Spatial analysis",  img: "", href: "spat_vis.html" },
-  ]
-};
-
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "Visium HD",
-  titleHref: "spat_vishd.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_vishd.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_vishd.html", sub:
-        { label: "Bin Resolution", tag: "2µm / 8µm / 16µm", href: "spat_vishd.html" },
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_vishd.html" },
-  ]
-};
-
-var mIF = {
-  id:        "pipeline-mIF",
-  title:     "Multiplexed Immunofluorescence",
-  titleHref: "spat_if.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_if.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_if.html",
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_if.html" },
-  ]
-};
-
-</script>
-<div style="clear: both;">
-
-</div>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
+<div id="cell-segmentation" class="section level3">
+<h3>1. Cell Segmentation</h3>
+<div class="pipeline-wrap" id="xen-segment">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
-
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(XenSegment);</script>
+<p>Generalised segmentation models, including those bundled with Xenium
+Ranger, are trained on idealised cell morphologies and fail
+systematically in complex tissue, precisely where accurate segmentation
+matters most. This <strong>Cell Segmentation</strong> module addresses
+this through a three-step workflow: automated image preprocessing to
+composite and optimise Xenium’s multi-channel stains into a
+cellpose-compatible format; <em>optional image registration</em> is
+possible, so as to align additionally acquired images; custom model
+training via the <em>Cellpose</em> GUI using tissue-specific image
+crops; and headless bulk segmentation across the full image set. An
+<em>optional mask-merging</em> step is available for tissues requiring
+separate segmentation strategies for distinct cell populations (for
+example, preserving large structural masks while selectively
+transferring immune cell boundaries from a second model).</p>
+</div>
+<div id="data-processing" class="section level3">
+<h3>2. Data Processing</h3>
+<div class="pipeline-wrap" id="xen-process">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Visium);</script>
-
-<div class="pipeline-wrap" id="pipeline-vishd">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(XenProcess);</script>
+<p>Following segmentation, raw transcript counts must be processed into
+a form suitable for biological interpretation. This <strong>Data
+Processing</strong> module encompasses the core analytical steps shared
+across spatial transcriptomics pipelines: quality control to identify
+and remove low-quality cells or uninformative features; normalisation to
+correct for technical variation in capture efficiency and sequencing
+depth; clustering to partition cells into transcriptionally similar
+groups; and annotation to assign biological identity to those groups.
+Annotation can be performed manually through marker gene inspection, or
+accelerated using a curated single-cell reference dataset for automated
+label transfer.</p>
+<p>These steps are not spatial-specific, they are adapted from the
+mature single-cell RNA-seq toolkit, but their outputs directly enable
+the spatial analyses that follow, including niche identification,
+cell-cell interaction inference, and spatially variable gene
+detection.</p>
+</div>
+<div id="spatial-analysis" class="section level3">
+<h3>3. Spatial Analysis</h3>
+<div class="pipeline-wrap" id="xen-spatial">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
-
-<div class="pipeline-wrap" id="pipeline-mIF">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(mIF);</script>
-<br>
-<hr>
+<script>renderPipeline(XenSpatial);</script>
+<p>With cells annotated and positioned in tissue space, this
+<strong>Spatial Analysis</strong> module leverages the coordinate
+information that distinguishes spatial transcriptomics from dissociated
+single-cell approaches. Analyses progress from descriptive to
+inferential:</p>
+<ul>
+<li><p><strong>Density and distance</strong> metrics characterise how
+cell types are distributed and how proximate they are to one
+another.</p></li>
+<li><p><strong>Niche analysis</strong> (e.g. lisaClust) identifies
+recurrent spatial domains defined by co-localising cell type
+combinations.</p></li>
+<li><p><strong>Neighbourhood analysis</strong> (e.g. spicyR) tests
+whether specific cell type pairings are statistically enriched or
+depleted relative to a random spatial baseline.</p></li>
+<li><p><strong>SpatioMark</strong> extends this by quantifying how the
+transcriptional state of a cell is shaped by its spatial context, moving
+beyond proximity to ask whether being near a particular cell type
+changes gene expression.</p></li>
+<li><p><strong>Spatially variable gene</strong> (SVG) detection
+identifies genes whose expression is structured across tissue space,
+independent of cell type, revealing transcriptional gradients and domain
+boundaries that annotation alone would miss.</p></li>
+</ul>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1348,6 +1323,8 @@ loaded via a namespace (and not attached):
 [33] digest_0.6.39     R6_2.6.1          pillar_1.11.1     callr_3.7.6      
 [37] magrittr_2.0.5    bslib_0.10.0      tools_4.5.1       cachem_1.1.0     
 [41] getPass_0.2-4    </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

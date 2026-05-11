@@ -260,13 +260,16 @@ $(document).ready(function () {
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Spatial</a>
       <ul class="dropdown-menu" role="menu">
         <li>
-          <a href="xen.html">Xenium</a>
+          <a href="spat_xen.html">Xenium</a>
         </li>
         <li>
-          <a href="vis.html">Visium</a>
+          <a href="spat_vis.html">Visium</a>
         </li>
         <li>
-          <a href="vishd.html">VisiumHD</a>
+          <a href="spat_vishd.html">VisiumHD</a>
+        </li>
+        <li>
+          <a href="spat_if.html">mIF</a>
         </li>
       </ul>
     </li>
@@ -274,16 +277,30 @@ $(document).ready(function () {
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Single Cell</a>
       <ul class="dropdown-menu" role="menu">
         <li>
-          <a href="xen.html">Single Cell RNA</a>
+          <a href="sc_sc.html">Single Cell RNA</a>
         </li>
         <li>
-          <a href="xen.html">ATAC-Seq</a>
+          <a href="sc_atac.html">ATAC-Seq</a>
         </li>
         <li>
-          <a href="vis.html">TCR/BCR Sequencing</a>
+          <a href="sc_vdj.html">TCR/BCR Sequencing</a>
         </li>
         <li>
-          <a href="vishd.html">Flow Cytometry</a>
+          <a href="sc_flow.html">Flow Cytometry</a>
+        </li>
+      </ul>
+    </li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Bulk/Genomics</a>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="b_rna.html">Bulk RNAseq</a>
+        </li>
+        <li>
+          <a href="b_genomics.html">Genomics</a>
+        </li>
+        <li>
+          <a href="b_microbiome.html">Microbiome</a>
         </li>
       </ul>
     </li>
@@ -292,6 +309,9 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="whattoexpect.html">What to Expect</a>
+</li>
+<li>
   <a href="platform.html">Choose a platform</a>
 </li>
       </ul>
@@ -341,7 +361,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-05
+<strong>Last updated:</strong> 2026-05-11
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -388,15 +408,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree3f5ce8d4b8f8f1ebfe97c688418550daa1e71253targetblank3f5ce8da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetreed12efc3073641c7ce9361712c62aeb4d6aa71417targetblankd12efc3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/3f5ce8d4b8f8f1ebfe97c688418550daa1e71253" target="_blank">3f5ce8d</a>
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/d12efc3073641c7ce9361712c62aeb4d6aa71417" target="_blank">d12efc3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetree3f5ce8d4b8f8f1ebfe97c688418550daa1e71253targetblank3f5ce8da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomDrThomasOneilPipelinetreed12efc3073641c7ce9361712c62aeb4d6aa71417targetblankd12efc3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -406,7 +426,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/DrThomasOneil/Pipeline/tree/3f5ce8d4b8f8f1ebfe97c688418550daa1e71253" target="_blank">3f5ce8d</a>.
+<a href="https://github.com/DrThomasOneil/Pipeline/tree/d12efc3073641c7ce9361712c62aeb4d6aa71417" target="_blank">d12efc3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -435,6 +455,15 @@ Ignored files:
     Ignored:    plots/
     Ignored:    workflow.R
     Ignored:    workflow.Rproj
+
+Untracked files:
+    Untracked:  analysis/adit/modules.html
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/vis.Rmd
+    Deleted:    analysis/vishd.Rmd
+    Deleted:    analysis/xen.Rmd
 
 </code></pre>
 <p>
@@ -469,19 +498,20 @@ Analysis Pipelines
 <div class="team-member">
 <a href="bulk.html"><img src="assets/index-ims/bulk.png" alt="bulk"></a>
 <h4>
-<strong>Bulk</strong>
+<strong>Bulk Omics</strong>
 </h4>
 <p>
 Bulk technologies capture the average expression signal across thousands
 of cells simultaneously, masking cell-to-cell variation. They remain
 valuable for high-throughput comparisons across conditions, large cohort
-studies, and well-defined homogeneous tissues.
+studies, and well-defined homogeneous tissues. These include bulk
+RNAseq, genomics, microbiome, and more.
 </p>
 </div>
 </div>
 <div class="col-md-6 col-lg-4">
 <div class="team-member">
-<a href="sc.html"><img src="assets/index-ims/sc.png" alt="single-cell"></a>
+<a href="scindex.html"><img src="assets/index-ims/sc.png" alt="single-cell"></a>
 <h4>
 <strong>Single Cell</strong>
 </h4>
@@ -512,6 +542,41 @@ throughput, and multiplexing depth.
 </div>
 </div>
 </div>
+<details>
+<summary>
+Index:
+</summary>
+<ul>
+<li><a href="spatial.html">Spatial</a><br />
+</li>
+<li><a href="spat_xen.html">Spatial/Xenium</a><br />
+</li>
+<li><a href="spat_vishd.html">Spatial/VisiumHD</a><br />
+</li>
+<li><a href="spat_vis.html">Spatial/Visium</a><br />
+</li>
+<li><a href="spat_if.html">Spatial/mIF (WIP)</a></li>
+</ul>
+<hr>
+<ul>
+<li><a href="scindex.html">SingleCell</a><br />
+</li>
+<li><a href="sc_sc.html">SingleCell/scRNAseq</a><br />
+</li>
+<li><a href="sc_atac.html">SingleCell/ATAC-seq (WIP)</a><br />
+</li>
+<li><a href="sc_vdj.html">SingleCell/TCR / BCR (WIP)</a><br />
+</li>
+<li><a href="sc_flow.html">SingleCell/FLow Cytometry (WIP)</a></li>
+</ul>
+<hr>
+<p>Additional resources:</p>
+<ul>
+<li><a href="whattoexpect.html">What is a pipelines?</a><br />
+</li>
+<li><a href="platforms.html">Choosing a Platform</a></li>
+</ul>
+</details>
 </div>
 </div>
 </div>

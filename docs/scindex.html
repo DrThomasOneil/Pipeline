@@ -11,7 +11,7 @@
 
 
 
-<title>Spatial</title>
+<title>Single Cell</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -438,8 +438,8 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><span
-style="display:none;">Spatial</span></h1>
+<h1 class="title toc-ignore"><span style="display:none;">Single
+Cell</span></h1>
 
 </div>
 
@@ -1202,75 +1202,61 @@ var scTranscriptomics = {
   ]
 };
 </script>
-<!---Index--->
-
 <script>
 
-<!-- Spatial -->
-
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium",
-  titleHref: "spat_xen.html",
+var SingleCell = {
+  id:        "pipeline-scrna",
+  title:     "Single Cell RNAseq",
+  titleHref: "sc_sc.html",
   steps: [
-    { label: "Cell segmentation",
-      img: "assets/index-ims/segment.png",
-      href: "spat_xen.html"},
-    { label: "Data processing",
-      img: "assets/index-ims/annotation.png",
-      href: "spat_xen.html",
+    { label: "Data QC and Processing", img: "", href: "sc_sc.html" },
+    { label: "Data Integration",       img: "", href: "sc_sc.html" },
+    { label: "Data Annotation",        img: "", href: "sc_sc.html", sub:
+      { label: "Reference Data", tag: "Optional", href: "sc_sc.html" },
     },
-    { label: "Spatial analysis",
-      img: "assets/index-ims/density.png",
-      href: "spat_xen.html" },
+    { label: "Transcriptomics Analysis", img: "", href: "sc_sc.html" }
   ]
 };
 
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium",
-  titleHref: "spat_vis.html",
+var ATAC = {
+  id:        "pipeline-scatac",
+  title:     "Single Cell ATAC",
+  titleHref: "sc_atac.html",
   steps: [
-    { label: "Spot Alignment and QC", img: "", href: "spat_vis.html"},
-    { label: "Data processing",   img: "", href: "spat_vis.html"},
-    { label: "Spatial analysis",  img: "", href: "spat_vis.html" },
+    { label: "Data QC",            img: "", href: "sc_atac.html" },
+    { label: "Data Processing",    img: "", href: "sc_atac.html", sub:
+      { label: "Peak Calling", tag: "MACS2 / ArchR", href: "sc_atac.html" },
+    },
+    { label: "Data Annotation",    img: "", href: "sc_atac.html", sub:
+      { label: "Gene Activity Matrix", tag: "Optional", href: "sc_atac.html" },
+    },
+    { label: "Chromatin Analysis", img: "", href: "sc_atac.html" }
   ]
 };
 
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "Visium HD",
-  titleHref: "spat_vishd.html",
+var VDJ = {
+  id:        "pipeline-vdj",
+  title:     "TCR / BCR",
+  titleHref: "sc_vdj.html",
   steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_vishd.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_vishd.html", sub:
-        { label: "Bin Resolution", tag: "2µm / 8µm / 16µm", href: "spat_vishd.html" },
+    { label: "Data QC",             img: "", href: "sc_vdj.html" },
+    { label: "Data Processing",     img: "", href: "sc_vdj.html", sub:
+      { label: "scRNA-seq Data", tag: "Required", href: "sc_vdj.html" },
     },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_vishd.html" },
+    { label: "Repertoire Analysis", img: "", href: "sc_vdj.html" }
   ]
 };
 
-var mIF = {
-  id:        "pipeline-mIF",
-  title:     "Multiplexed Immunofluorescence",
-  titleHref: "spat_if.html",
+var FlowCytometry = {
+  id:        "pipeline-flow",
+  title:     "Flow Cytometry",
+  titleHref: "sc_flow.html",
   steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_if.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_if.html",
+    { label: "Compensation & QC",     img: "", href: "sc_flow.html", sub:
+      { label: "Spectral Unmixing", tag: "Optional", href: "sc_flow.html" },
     },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_if.html" },
+    { label: "Conventional Analysis", img: "", href: "sc_flow.html" },
+    { label: "Advanced Analysis",     img: "", href: "sc_flow.html" }
   ]
 };
 
@@ -1278,33 +1264,40 @@ var mIF = {
 <div style="clear: both;">
 
 </div>
-<div class="pipeline-wrap" id="pipeline-xenium">
+<div class="pipeline-wrap" id="pipeline-scrna">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
+<script>renderPipeline(SingleCell);</script>
 
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(Visium);</script>
+<hr>
 
-<div class="pipeline-wrap" id="pipeline-vishd">
+<div class="pipeline-wrap" id="pipeline-scatac">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
+<script>renderPipeline(ATAC);</script>
 
-<div class="pipeline-wrap" id="pipeline-mIF">
+<hr>
+
+<div class="pipeline-wrap" id="pipeline-vdj">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(mIF);</script>
+<script>renderPipeline(VDJ);</script>
+
+<hr>
+
+<div class="pipeline-wrap" id="pipeline-flow">
+  <a class="pipeline-title" href="#"></a>
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(FlowCytometry);</script>
+
 <br>
 <hr>
 <br>

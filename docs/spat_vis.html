@@ -11,7 +11,7 @@
 
 
 
-<title>Spatial</title>
+<title>Visium</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -439,7 +439,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore"><span
-style="display:none;">Spatial</span></h1>
+style="display:none;">Visium</span></h1>
 
 </div>
 
@@ -677,6 +677,9 @@ There are no past versions. Publish this analysis with
 </div>
 </div>
 </div>
+<div id="visium-analysis-pipeline"
+class="section level2 tabset tabset-fade">
+<h2 class="tabset tabset-fade">Visium Analysis Pipeline</h2>
 <!-- Init -->
 <style>
 .pipeline-wrap { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 1.5rem 0; padding-left: 15px; }
@@ -1202,111 +1205,79 @@ var scTranscriptomics = {
   ]
 };
 </script>
-<!---Index--->
-
-<script>
-
-<!-- Spatial -->
-
-var Xenium = {
-  id:        "pipeline-xenium",
-  title:     "Xenium",
-  titleHref: "spat_xen.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "assets/index-ims/segment.png",
-      href: "spat_xen.html"},
-    { label: "Data processing",
-      img: "assets/index-ims/annotation.png",
-      href: "spat_xen.html",
-    },
-    { label: "Spatial analysis",
-      img: "assets/index-ims/density.png",
-      href: "spat_xen.html" },
-  ]
-};
-
-var Visium = {
-  id:        "pipeline-visium",
-  title:     "Visium",
-  titleHref: "spat_vis.html",
-  steps: [
-    { label: "Spot Alignment and QC", img: "", href: "spat_vis.html"},
-    { label: "Data processing",   img: "", href: "spat_vis.html"},
-    { label: "Spatial analysis",  img: "", href: "spat_vis.html" },
-  ]
-};
-
-var VisiumHD = {
-  id:        "pipeline-vishd",
-  title:     "Visium HD",
-  titleHref: "spat_vishd.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_vishd.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_vishd.html", sub:
-        { label: "Bin Resolution", tag: "2µm / 8µm / 16µm", href: "spat_vishd.html" },
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_vishd.html" },
-  ]
-};
-
-var mIF = {
-  id:        "pipeline-mIF",
-  title:     "Multiplexed Immunofluorescence",
-  titleHref: "spat_if.html",
-  steps: [
-    { label: "Cell segmentation",
-      img: "",
-      href: "spat_if.html"},
-    { label: "Data processing",
-      img: "",
-      href: "spat_if.html",
-    },
-    { label: "Spatial analysis",
-      img: "",
-      href: "spat_if.html" },
-  ]
-};
-
-</script>
-<div style="clear: both;">
-
-</div>
-<div class="pipeline-wrap" id="pipeline-xenium">
-  <a class="pipeline-title" href="#"></a>
+<div id="image-processing" class="section level3">
+<h3>1. Image Processing</h3>
+<div class="pipeline-wrap" id="vis-improc">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
-
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(VisImProc);</script>
+<p>Visium’s H&amp;E image contains rich morphological information that,
+when properly extracted, contextualises and validates the
+transcriptional data captured in the same section. This <strong>Image
+Processing</strong> module prepares that image for quantitative use:</p>
+<ul>
+<li>tissue detection identifies the capture area and excludes
+background;<br />
+</li>
+<li>image registration aligns the H&amp;E to spot coordinates, with
+optional co-registration of fluorescent microscopy where
+available;<br />
+</li>
+<li>compartmentalisation segments the tissue into morphologically
+distinct regions such as tumour, stroma, and necrosis; and<br />
+</li>
+<li>cell identification characterises the cellular composition visible
+within the histology.</li>
+</ul>
+<p>Together these steps ground the transcriptional analysis in tissue
+architecture and enable morphology-informed interpretation
+downstream.</p>
+</div>
+<div id="data-processing" class="section level3">
+<h3>2. Data Processing</h3>
+<div class="pipeline-wrap" id="vis-process">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Visium);</script>
-
-<div class="pipeline-wrap" id="pipeline-vishd">
-  <a class="pipeline-title" href="#"></a>
+<script>renderPipeline(VisProcess);</script>
+<p>Following image processing, raw spot-level transcript counts must be
+prepared for biological interpretation. This <strong>Data
+Processing</strong> module applies the same core steps as the
+single-cell RNA-seq toolkit (quality control, normalisation, clustering,
+and annotation) at the resolution of Visium’s 55µm capture spots rather
+than individual cells. The key distinction is that each spot captures a
+mixture of cells, so annotations describe the dominant transcriptional
+signal of a spot rather than a single cell identity. As with the Xenium
+pipeline, annotation can be performed manually or accelerated using a
+single-cell reference for automated label transfer, which also sets the
+stage for the deconvolution step that follows in spatial analysis.</p>
+</div>
+<div id="spatial-analysis" class="section level3">
+<h3>3. Spatial Analysis</h3>
+<div class="pipeline-wrap" id="vis-spatial">
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
-
-<div class="pipeline-wrap" id="pipeline-mIF">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(mIF);</script>
-<br>
-<hr>
+<script>renderPipeline(VisSpatial);</script>
+<p>Where data processing partitions spots by transcriptional similarity,
+this Spatial Analysis module asks explicitly spatial questions.</p>
+<ul>
+<li><p><strong>Deconvolution</strong> estimates the cellular composition
+of each spot using a single-cell reference, effectively recovering cell
+type proportions despite the absence of single-cell resolution.</p></li>
+<li><p><strong>Spatially variable gene</strong> detection then
+identifies genes whose expression is structured across tissue space
+rather than explained by cell type alone.</p></li>
+<li><p><strong>Spatial domain</strong> analysis groups spots into
+recurrent tissue niches based on both transcriptional and positional
+features.</p></li>
+<li><p><strong>Differential expression</strong> compares transcriptional
+programs across regions, conditions, or tissue compartments.</p></li>
+<li><p><strong>Pathway analysis</strong> and module scoring place these
+differences in biological context, summarising coordinated gene programs
+into interpretable functional signatures.</p></li>
+</ul>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1348,6 +1319,8 @@ loaded via a namespace (and not attached):
 [33] digest_0.6.39     R6_2.6.1          pillar_1.11.1     callr_3.7.6      
 [37] magrittr_2.0.5    bslib_0.10.0      tools_4.5.1       cachem_1.1.0     
 [41] getPass_0.2-4    </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
