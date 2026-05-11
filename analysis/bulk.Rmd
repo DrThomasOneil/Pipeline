@@ -1,0 +1,19 @@
+---
+title: '<span style = "display:none;">Bulk Omics</span>'
+
+output:
+  workflowr::wflow_html:
+    toc: false
+    self_contained: true
+    css: adit/custom.css
+site: workflowr::wflow_site
+---
+
+## Bulk Omics {.tabset .tabset-fade}
+<div style = "text-align: center; font-size:3em; color:#D3D3D3 ">
+<br><br>
+*Coming soon*
+<br><br>
+
+</div>
+

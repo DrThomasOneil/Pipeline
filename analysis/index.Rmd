@@ -18,16 +18,16 @@ site: workflowr::wflow_site
 <div class="col-md-6 col-lg-4">
 <div class="team-member">
 <a href="bulk.html"><img src="assets/index-ims/bulk.png" alt="bulk"></a>
-<h4>**Bulk**</h4>
+<h4>**Bulk Omics**</h4>
 <p>
-Bulk technologies capture the average expression signal across thousands of cells simultaneously, masking cell-to-cell variation. They remain valuable for high-throughput comparisons across conditions, large cohort studies, and well-defined homogeneous tissues.
+Bulk technologies capture the average expression signal across thousands of cells simultaneously, masking cell-to-cell variation. They remain valuable for high-throughput comparisons across conditions, large cohort studies, and well-defined homogeneous tissues. These include bulk RNAseq, genomics, microbiome, and more. 
 </p>
 </div>
 </div>
 
 <div class="col-md-6 col-lg-4">
 <div class="team-member">
-<a href="sc.html"><img src="assets/index-ims/sc.png" alt="single-cell"></a>
+<a href="scindex.html"><img src="assets/index-ims/sc.png" alt="single-cell"></a>
 <h4>**Single Cell**</h4>
 <p>
 Single-cell technologies resolve gene or protein expression at the level of individual cells, revealing cellular heterogeneity, rare populations, and developmental trajectories invisible to bulk methods. The trade-off is loss of spatial context; cells are dissociated prior to measurement.
@@ -49,3 +49,29 @@ Spatial technologies preserve the physical location of cells within tissue, enab
 
 </div>
 </div>
+
+
+<details><summary>Index:</summary>
+
+- [Spatial](spatial.html)  
+- [Spatial/Xenium](spat_xen.html)  
+- [Spatial/VisiumHD](spat_vishd.html)  
+- [Spatial/Visium](spat_vis.html)  
+- [Spatial/mIF (WIP)](spat_if.html)  
+
+<hr>
+
+- [SingleCell](scindex.html)  
+- [SingleCell/scRNAseq](sc_sc.html)  
+- [SingleCell/ATAC-seq (WIP)](sc_atac.html)  
+- [SingleCell/TCR / BCR (WIP)](sc_vdj.html)  
+- [SingleCell/FLow Cytometry (WIP)](sc_flow.html)  
+
+<hr> 
+
+Additional resources: 
+
+- [What is a pipelines?](whattoexpect.html)  
+- [Choosing a Platform](platforms.html)  
+
+</details>

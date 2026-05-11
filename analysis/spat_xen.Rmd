@@ -1,0 +1,67 @@
+---
+title: '<span style = "display:none;">Xenium</span>'
+
+output:
+  workflowr::wflow_html:
+    toc: false
+site: workflowr::wflow_site
+---
+
+## Xenium Analysis Pipeline {.tabset .tabset-fade}
+
+```{r echo=F}
+htmltools::includeHTML("docs/adit/modules/modules.html")
+```
+
+
+### 1. Cell Segmentation
+
+```{=html}
+<div class="pipeline-wrap" id="xen-segment">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(XenSegment);</script>
+```
+
+Generalised segmentation models, including those bundled with Xenium Ranger, are trained on idealised cell morphologies and fail systematically in complex tissue, precisely where accurate segmentation matters most. This **Cell Segmentation** module addresses this through a three-step workflow: automated image preprocessing to composite and optimise Xenium's multi-channel stains into a cellpose-compatible format; *optional image registration* is possible, so as to align additionally acquired images; custom model training via the *Cellpose* GUI using tissue-specific image crops; and headless bulk segmentation across the full image set. An *optional mask-merging* step is available for tissues requiring separate segmentation strategies for distinct cell populations (for example, preserving large structural masks while selectively transferring immune cell boundaries from a second model).
+
+
+### 2. Data Processing
+
+```{=html}
+<div class="pipeline-wrap" id="xen-process">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(XenProcess);</script>
+```
+
+Following segmentation, raw transcript counts must be processed into a form suitable for biological interpretation. This **Data Processing** module encompasses the core analytical steps shared across spatial transcriptomics pipelines: quality control to identify and remove low-quality cells or uninformative features; normalisation to correct for technical variation in capture efficiency and sequencing depth; clustering to partition cells into transcriptionally similar groups; and annotation to assign biological identity to those groups. Annotation can be performed manually through marker gene inspection, or accelerated using a curated single-cell reference dataset for automated label transfer.
+
+These steps are not spatial-specific, they are adapted from the mature single-cell RNA-seq toolkit, but their outputs directly enable the spatial analyses that follow, including niche identification, cell-cell interaction inference, and spatially variable gene detection.
+
+### 3. Spatial Analysis
+
+
+```{=html}
+<div class="pipeline-wrap" id="xen-spatial">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(XenSpatial);</script>
+```
+
+With cells annotated and positioned in tissue space, this **Spatial Analysis** module leverages the coordinate information that distinguishes spatial transcriptomics from dissociated single-cell approaches. Analyses progress from descriptive to inferential:  
+
+- **Density and distance** metrics characterise how cell types are distributed and how proximate they are to one another.
+
+- **Niche analysis** (e.g. lisaClust) identifies recurrent spatial domains defined by co-localising cell type combinations.
+
+- **Neighbourhood analysis** (e.g. spicyR) tests whether specific cell type pairings are statistically enriched or depleted relative to a random spatial baseline.
+
+- **SpatioMark** extends this by quantifying how the transcriptional state of a cell is shaped by its spatial context, moving beyond proximity to ask whether being near a particular cell type changes gene expression.
+
+- **Spatially variable gene** (SVG) detection identifies genes whose expression is structured across tissue space, independent of cell type, revealing transcriptional gradients and domain boundaries that annotation alone would miss.
+
+

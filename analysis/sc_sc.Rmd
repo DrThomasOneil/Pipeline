@@ -1,0 +1,85 @@
+---
+title: '<span style = "display:none;">Single Cell RNA</span>'
+
+output:
+  workflowr::wflow_html:
+    toc: false
+site: workflowr::wflow_site
+---
+
+## Single Cell Analysis Pipeline {.tabset .tabset-fade}
+
+```{r echo=F}
+htmltools::includeHTML("docs/adit/modules/modules.html")
+```
+
+### 1. QC and Processing
+
+```{=html}
+<div class="pipeline-wrap" id="sc-qcprocess">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(scQCProcess);</script>
+```
+
+Raw single-cell sequencing data contains technical noise that, if uncorrected, propagates through every downstream step. This QC and Processing module removes that noise and prepares a clean, comparable feature space for analysis.
+
+- **Ambient RNA removal** corrects for free-floating transcripts captured alongside cells during droplet formation, which otherwise inflate or distort gene expression profiles;  
+- **Cell QC** filters low-quality cells by transcript count, gene count, and mitochondrial fraction, with doublet detection identifying and excluding droplets containing two cells rather than one;  
+- **Normalisation** accounts for differences in sequencing depth across cells, placing them on a comparable scale; and  
+- **Feature selection**, **dimensionality reduction** and **clustering** identify the most informative genes and compress the high-dimensional expression matrix into a structure that reveals cell population architecture.
+
+Together these steps produce a clean, reduced representation of the data on which all biological interpretation depends.
+
+### 2. Integration
+
+```{=html}
+<div class="pipeline-wrap" id="sc-integration">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(scIntegration);</script>
+```
+
+When single-cell data is collected across multiple samples, batches, or experimental conditions, technical variation between runs can obscure genuine biological differences. This **Data Integration** module aligns datasets into a shared embedding without removing biological signal.
+
+- **Batch correction** identifies and removes systematic technical effects using methods such as Harmony or scVI, with optional integration of public reference datasets to contextualise findings within the broader literature;  
+- **Dimensionality reduction and clustering** are then re-applied to the corrected embedding, producing cell groupings that reflect biology rather than batch.
+
+Integration is not always necessary (single-sample analyses proceed directly from QC and Processing to Annotation) but it is essential for any multi-donor, multi-condition, or multi-platform experiment.
+
+### 3. Data Annotation
+
+```{=html}
+<div class="pipeline-wrap" id="sc-annotation">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(scAnnotation);</script>
+```
+
+Clustering groups cells by transcriptional similarity but assigns no biological identity. This **Data Annotation** module interprets those clusters in terms of known cell types and states.
+
+- **Marker identification** extracts the genes that best distinguish each cluster, providing the base for annotation decisions and visualisation;  
+- **Reference mapping** compares the query dataset against a curated single-cell reference atlas, enabling automated or semi-automated label transfer that accelerates annotation, particularly for well-characterised tissues; and  
+- **Cell type annotation** assigns final identities to clusters, drawing on marker evidence, reference labels, and domain knowledge.
+
+Annotation is an inherently iterative step. Clusters are frequently re-examined, split, or merged as biological interpretation develops. The quality of annotation directly determines the interpretability of all downstream analysis.
+
+### 4. Transcriptomic Analysis 
+
+```{=html}
+<div class="pipeline-wrap" id="sc-transcriptomics">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(scTranscriptomics);</script>
+```
+
+With cells annotated, this Transcriptomics Analysis module asks what those cells are doing and how they relate to one another across conditions, time, or disease state.
+
+- **Differential expression** identifies genes that are systematically up- or down-regulated between cell types, conditions, or tissue compartments, forming the primary evidence base for biological claims;  
+- **Pathway analysis** and **module scoring** place those gene lists in functional context, summarising coordinated transcriptional programs into interpretable biological signatures;  
+- **Trajectory analysis** orders cells along continuous developmental or activation paths, reconstructing dynamic processes such as differentiation, activation, or exhaustion from a static snapshot; and  
+- **Cell-cell communication** infers signalling interactions between cell types by identifying co-expressed ligand-receptor pairs, revealing how populations coordinate behaviour within a tissue or niche.

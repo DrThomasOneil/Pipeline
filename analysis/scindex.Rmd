@@ -1,46 +1,56 @@
 ---
-title: '<span style = "display:none;">Spatial</span>'
+title: '<span style = "display:none;">Single Cell</span>'
 output:
   workflowr::wflow_html:
     toc: false
 site: workflowr::wflow_site
 ---
 
-```{r echo=F}
+```{r include=T, echo=F}
+
 htmltools::includeHTML("docs/adit/modules/modules.html")
-htmltools::includeHTML("docs/adit/modules/spat.html")
+htmltools::includeHTML("docs/adit/modules/sc.html")
+
 ```
+
 
 <div style="clear: both;"></div>
 
 ```{=html}
-<div class="pipeline-wrap" id="pipeline-xenium">
+<div class="pipeline-wrap" id="pipeline-scrna">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(Xenium);</script>
+<script>renderPipeline(SingleCell);</script>
 
-<div class="pipeline-wrap" id="pipeline-visium">
-  <a class="pipeline-title" href="#"></a>
-  <div class="pipe-skip-arc"></div>
-  <div class="pipeline-flow"></div>
-</div>
-<script>renderPipeline(Visium);</script>
+<hr>
 
-<div class="pipeline-wrap" id="pipeline-vishd">
+<div class="pipeline-wrap" id="pipeline-scatac">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(VisiumHD);</script>
+<script>renderPipeline(ATAC);</script>
 
-<div class="pipeline-wrap" id="pipeline-mIF">
+<hr>
+
+<div class="pipeline-wrap" id="pipeline-vdj">
   <a class="pipeline-title" href="#"></a>
   <div class="pipe-skip-arc"></div>
   <div class="pipeline-flow"></div>
 </div>
-<script>renderPipeline(mIF);</script>
+<script>renderPipeline(VDJ);</script>
+
+<hr>
+
+<div class="pipeline-wrap" id="pipeline-flow">
+  <a class="pipeline-title" href="#"></a>
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(FlowCytometry);</script>
+
 ```
 
 <br><hr>

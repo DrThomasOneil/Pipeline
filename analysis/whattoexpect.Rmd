@@ -1,0 +1,97 @@
+---
+title: '<span style = "display:none;">What to Expect</span>'
+output:
+  workflowr::wflow_html:
+    toc: false
+site: workflowr::wflow_site
+---
+<div style="clear: both;"></div>
+
+<div style="text-align: center">
+
+<span style="font-size: 24px; font-weight: 600;">Precision Bioinformatics: How Our Pipelines Work</span>
+<br>
+<span style="font-size: 18px; color: #888; font-style: italic;">A guide to how PrecisionGO pipelines are designed, delivered, and customised to your research.</span>
+
+</div>
+
+<div style="width: 20%; margin: 0 auto;"><hr></div>
+
+
+The overarching goal of PrecisionGO is to accelerate research ➤ from **samples** to **data** to **publication** ➤ as *quickly* and as *effectively* as possible. Central to this is the **Digital Platform**: a bioinformatic-guided framework designed to balance the specific needs of individual projects with an overarching commitment to efficiency, reproducibility, and quality. The analysis pipelines documented here are one component of that platform, alongside metadata standards, reference databases, and standardised reporting.
+
+In practice, the pipeline service operates as a collaboration. Researchers engage through Scientific Platforms, where a single point of contact coordinates project intake, scopes the analysis, and connects the project to the bioinformatics team. From there, the bioinformatician works directly with the researcher; Not just to execute the analysis, but to interpret results, iterate on findings, and deliver outputs that are documented, reproducible, and ready for publication.
+
+The pipelines currently available reflect the technologies most actively used across the institute, and the catalogue continues to expand in response to researcher demand. If you don't see a pipeline that fits your data or question, reach out — custom analyses are scoped regularly, and pipelines built to standard become part of the catalogue for future users.
+
+<details><summary><span style="font-size: 18px; color: black; font-style: italic;">WHAT IS A PIPELINE?</span></summary>
+
+We are not designing automated workflows. The word **pipeline** carries that connotation in some contexts, implying raw data goes in one end and a result comes out the other with little in between. That is not what we mean, and it is worth being direct about that distinction.
+
+What we mean by a pipeline is a detailed, standardised series of steps, organised into logical **modules**, that defines how an analysis is performed, why each decision is made, and what constitutes an acceptable result at each stage. Each step within a module has defined inputs and outputs, documented code, described quality control interpretations, and identified touch points where the bioinformatician and researcher interact. 
+
+Each **module** consisting of several step has been curated from several years of collective experience across projects, technologies, and biological questions. Where a *conventional workflow* might describe what to do, and a *conventional pipeline* might automate how to do it, our framework does both, <strong>*and*</strong> adds a third layer: *a set of rules and standards that governs how pipelines are designed, expanded, and updated*. This allows for pipelines to outlast individuals, where over time, pipelines can be interrogated, extended, or redesigned using the same standards, the same documentation expectations, and the same quality thresholds. This framework allows each pipeline to become a reliable, robust institutional asset, not just personal scripts.
+
+This also means the catalogue is **adaptable**. New technologies, new tools, and new biological questions will continue to emerge, and the framework is designed to absorb them without compromising the rigour or consistency of what already exists.
+
+</details>
+
+<div style="width: 20%; margin: 0 auto;"><hr></div>
+
+<details><summary><span style="font-size: 18px; color: black; font-style: italic;">WHAT CAN I EXPECT WHEN REQUESTING A PIPELINE?</span></summary>
+
+Pipeline requests are scoped and delivered through Scientific Platforms. The process is organised into three stages:
+
+**Before analysis**
+
+Prior to any analytical work, the bioinformatician is involved in the early stages of your project. This includes an initial consultation to scope the analysis, clarify biological questions, and confirm data suitability. Where needed, the bioinformatician can contribute to experimental design to ensure the data generated is appropriate for the intended analysis. Data transfer and raw data processing (e.g. CellRanger, SpaceRanger, XeniumRanger, etc) are standard at this stage, though groups arriving with existing count matrices can exclude this.
+
+**Analysis**
+
+The requested pipeline is executed according to the documented standards described here. At the close of analysis, the bioinformatician presents the results in a follow-up meeting, walking through the analysis, findings, and interpretations together with the researcher.
+
+**After analysis**
+
+Depending on the needs of your project, the following can be requested as additional services:
+
+- Reproducible report generation
+
+- Additional interpretation consultations
+
+- A hosted or transferable workflowr page of the complete analysis
+
+- Follow-up visualisation requests
+
+- Manuscript preparation support
+
+*Timelines vary by pipeline complexity and are agreed upon during the initial consultation.*
+
+</details>
+
+<div style="width: 20%; margin: 0 auto;"><hr></div>
+
+<details><summary><span style="font-size: 18px; color: black; font-style: italic;">WHO IS DESIGNING THE PIPELINES?</span></summary>
+
+The pipelines are designed and maintained by the bioinformatian, Dr Thomas O'Neil, on the PrecisionGo team at the Westmead Institute for Medical Research. Dr. O'Neil works closely with bioinformatic collaborators on the project, including Dr's Brian Gloss and Ellis Patrick, to challenge and improve each pipeline's design and validation, and ultimate deployment. The team brings a combined background in experimental biology and computational analysis; ***a combination that is deliberate***. Understanding the biology that generates the data is as important as understanding the tools that analyse it, and that dual perspective shapes every pipeline design decision.
+
+The framework itself was developed to ensure that pipeline quality is not dependent on any single individual. Each pipeline is documented, version-controlled, and built to a defined standard, meaning the catalogue can be interrogated, extended, and maintained as the team evolves over time.
+
+**Pipeline development** is an active and ongoing process, driven in part by the technologies and questions most frequently brought to the team by researchers across the institute. If you are working with a technology or analytical question not currently represented in the catalogue, reach out; new pipelines are scoped and developed regularly.
+
+</details>
+
+<div style="width: 20%; margin: 0 auto;"><hr></div>
+
+<details><summary><span style="font-size: 18px; color: black; font-style: italic;">HOW ARE PIPELINES DESIGNED AND DEVELOPED?</span></summary>
+
+Pipeline development begins with what already exists. Established workflows from the literature, tool documentation, and prior projects serve as templates, but rather than adopting any single workflow wholesale, the focus is on identifying the strongest components from across those templates and integrating them into a coherent, standardised module. This is where the *framework* earns its value: **modularisation** rules ensure that each component has clearly defined inputs and outputs, so that modules from different origins slot together without the friction that typically accumulates when workflows are stitched together project by project. 
+
+In practice, **new pipelines are prioritised** based on researcher demand and developed iteratively; outlined, coded, validated against public or development data, and tested on incoming projects before being formally deployed to Scientific Platforms. Pipelines are reviewed annually to incorporate new tools, updated best practices, and feedback from use.
+
+***Customisation*** is a natural consequence of this structure. Because pipelines are modular, analyses can be scoped to include only the steps relevant to your biological question, ultimately reducing time, cost, and interpretive noise. Parameters are adjusted to fit the biology of your data, not left at defaults. And where a project raises a question that no existing module addresses, a **new module** can be designed to the same standard and integrated into the pipeline without disrupting what surrounds it.
+
+The result is an analytical service that improves with every project that passes through it.
+
+</details>
+
+<div style="width: 20%; margin: 0 auto;"><hr></div>

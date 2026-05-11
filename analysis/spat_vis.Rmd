@@ -1,0 +1,71 @@
+---
+title: '<span style = "display:none;">Visium</span>'
+
+output:
+  workflowr::wflow_html:
+    toc: false
+site: workflowr::wflow_site
+---
+
+## Visium Analysis Pipeline {.tabset .tabset-fade}
+
+```{r echo=F}
+htmltools::includeHTML("docs/adit/modules/modules.html")
+```
+
+
+
+### 1. Image Processing
+
+```{=html}
+<div class="pipeline-wrap" id="vis-improc">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(VisImProc);</script>
+```
+
+Visium's H&E image contains rich morphological information that, when properly extracted, contextualises and validates the transcriptional data captured in the same section. This **Image Processing** module prepares that image for quantitative use: 
+
+- tissue detection identifies the capture area and excludes background;  
+- image registration aligns the H&E to spot coordinates, with optional co-registration of fluorescent microscopy where available;  
+- compartmentalisation segments the tissue into morphologically distinct regions such as tumour, stroma, and necrosis; and  
+- cell identification characterises the cellular composition visible within the histology. 
+
+Together these steps ground the transcriptional analysis in tissue architecture and enable morphology-informed interpretation downstream.
+
+### 2. Data Processing
+
+```{=html}
+<div class="pipeline-wrap" id="vis-process">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(VisProcess);</script>
+```
+
+Following image processing, raw spot-level transcript counts must be prepared for biological interpretation. This **Data Processing** module applies the same core steps as the single-cell RNA-seq toolkit (quality control, normalisation, clustering, and annotation) at the resolution of Visium's 55µm capture spots rather than individual cells. The key distinction is that each spot captures a mixture of cells, so annotations describe the dominant transcriptional signal of a spot rather than a single cell identity. As with the Xenium pipeline, annotation can be performed manually or accelerated using a single-cell reference for automated label transfer, which also sets the stage for the deconvolution step that follows in spatial analysis.
+
+### 3. Spatial Analysis
+
+
+```{=html}
+<div class="pipeline-wrap" id="vis-spatial">
+  <div class="pipe-skip-arc"></div>
+  <div class="pipeline-flow"></div>
+</div>
+<script>renderPipeline(VisSpatial);</script>
+```
+
+Where data processing partitions spots by transcriptional similarity, this Spatial Analysis module asks explicitly spatial questions. 
+
+- **Deconvolution** estimates the cellular composition of each spot using a single-cell reference, effectively recovering cell type proportions despite the absence of single-cell resolution. 
+
+- **Spatially variable gene** detection then identifies genes whose expression is structured across tissue space rather than explained by cell type alone. 
+
+- **Spatial domain** analysis groups spots into recurrent tissue niches based on both transcriptional and positional features. 
+
+- **Differential expression** compares transcriptional programs across regions, conditions, or tissue compartments. 
+
+- **Pathway analysis** and module scoring place these differences in biological context, summarising coordinated gene programs into interpretable functional signatures.
+
