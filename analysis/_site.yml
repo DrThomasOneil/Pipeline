@@ -5,28 +5,42 @@ navbar:
   left:
   - text: Home
     href: index.html
-
   - text: Pipelines
     menu:
       - text: Spatial
+        href: spatial.html
         menu:
           - text: Xenium
-            href: xen.html
+            href: spat_xen.html
           - text: Visium
-            href: vis.html
+            href: spat_vis.html
           - text: VisiumHD
-            href: vishd.html
+            href: spat_vishd.html
+          - text: mIF
+            href: spat_if.html
       - text: Single Cell
+        href: scindex.html
         menu:
           - text: Single Cell RNA
-            href: xen.html
+            href: sc_sc.html
           - text: ATAC-Seq
-            href: xen.html
+            href: sc_atac.html
           - text: TCR/BCR Sequencing
-            href: vis.html
+            href: sc_vdj.html
           - text: Flow Cytometry
-            href: vishd.html
+            href: sc_flow.html
+      - text: "Bulk/Genomics"
+        href: bulk.html
+        menu:
+          - text: Bulk RNAseq
+            href: b_rna.html
+          - text: Genomics
+            href: b_genomics.html
+          - text: Microbiome
+            href: b_microbiome.html
   right:
+  - text: What to Expect
+    href: whattoexpect.html
   - text: Choose a platform
     href: platform.html
 

@@ -1,0 +1,73 @@
+<!---Index--->
+
+<script>
+
+<!-- Spatial -->
+
+var Xenium = {
+  id:        "pipeline-xenium",
+  title:     "Xenium",
+  titleHref: "spat_xen.html",
+  steps: [
+    { label: "Cell segmentation",
+      img: "assets/index-ims/segment.png",
+      href: "spat_xen.html"},
+    { label: "Data processing",
+      img: "assets/index-ims/annotation.png",
+      href: "spat_xen.html",
+    },
+    { label: "Spatial analysis",
+      img: "assets/index-ims/density.png",
+      href: "spat_xen.html" },
+  ]
+};
+
+var Visium = {
+  id:        "pipeline-visium",
+  title:     "Visium",
+  titleHref: "spat_vis.html",
+  steps: [
+    { label: "Spot Alignment and QC", img: "", href: "spat_vis.html"},
+    { label: "Data processing",   img: "", href: "spat_vis.html"},
+    { label: "Spatial analysis",  img: "", href: "spat_vis.html" },
+  ]
+};
+
+var VisiumHD = {
+  id:        "pipeline-vishd",
+  title:     "Visium HD",
+  titleHref: "spat_vishd.html",
+  steps: [
+    { label: "Cell segmentation",
+      img: "",
+      href: "spat_vishd.html"},
+    { label: "Data processing",
+      img: "",
+      href: "spat_vishd.html", sub:
+        { label: "Bin Resolution", tag: "2µm / 8µm / 16µm", href: "spat_vishd.html" },
+    },
+    { label: "Spatial analysis",
+      img: "",
+      href: "spat_vishd.html" },
+  ]
+};
+
+var mIF = {
+  id:        "pipeline-mIF",
+  title:     "Multiplexed Immunofluorescence",
+  titleHref: "spat_if.html",
+  steps: [
+    { label: "Cell segmentation",
+      img: "",
+      href: "spat_if.html"},
+    { label: "Data processing",
+      img: "",
+      href: "spat_if.html",
+    },
+    { label: "Spatial analysis",
+      img: "",
+      href: "spat_if.html" },
+  ]
+};
+
+</script>

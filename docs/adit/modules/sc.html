@@ -1,0 +1,59 @@
+<script>
+
+var SingleCell = {
+  id:        "pipeline-scrna",
+  title:     "Single Cell RNAseq",
+  titleHref: "sc_sc.html",
+  steps: [
+    { label: "Data QC and Processing", img: "", href: "sc_sc.html" },
+    { label: "Data Integration",       img: "", href: "sc_sc.html" },
+    { label: "Data Annotation",        img: "", href: "sc_sc.html", sub:
+      { label: "Reference Data", tag: "Optional", href: "sc_sc.html" },
+    },
+    { label: "Transcriptomics Analysis", img: "", href: "sc_sc.html" }
+  ]
+};
+
+var ATAC = {
+  id:        "pipeline-scatac",
+  title:     "Single Cell ATAC",
+  titleHref: "sc_atac.html",
+  steps: [
+    { label: "Data QC",            img: "", href: "sc_atac.html" },
+    { label: "Data Processing",    img: "", href: "sc_atac.html", sub:
+      { label: "Peak Calling", tag: "MACS2 / ArchR", href: "sc_atac.html" },
+    },
+    { label: "Data Annotation",    img: "", href: "sc_atac.html", sub:
+      { label: "Gene Activity Matrix", tag: "Optional", href: "sc_atac.html" },
+    },
+    { label: "Chromatin Analysis", img: "", href: "sc_atac.html" }
+  ]
+};
+
+var VDJ = {
+  id:        "pipeline-vdj",
+  title:     "TCR / BCR",
+  titleHref: "sc_vdj.html",
+  steps: [
+    { label: "Data QC",             img: "", href: "sc_vdj.html" },
+    { label: "Data Processing",     img: "", href: "sc_vdj.html", sub:
+      { label: "scRNA-seq Data", tag: "Required", href: "sc_vdj.html" },
+    },
+    { label: "Repertoire Analysis", img: "", href: "sc_vdj.html" }
+  ]
+};
+
+var FlowCytometry = {
+  id:        "pipeline-flow",
+  title:     "Flow Cytometry",
+  titleHref: "sc_flow.html",
+  steps: [
+    { label: "Compensation & QC",     img: "", href: "sc_flow.html", sub:
+      { label: "Spectral Unmixing", tag: "Optional", href: "sc_flow.html" },
+    },
+    { label: "Conventional Analysis", img: "", href: "sc_flow.html" },
+    { label: "Advanced Analysis",     img: "", href: "sc_flow.html" }
+  ]
+};
+
+</script>

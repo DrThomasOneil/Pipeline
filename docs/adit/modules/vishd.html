@@ -1,0 +1,77 @@
+<script>
+var Segment = {
+  id:        "pipeline-segment",
+  title:     "VisHD-Segment",
+  titleHref: "xen.html",
+  steps: [
+    { label: "Image Processing",
+      img: "",
+      href: "",
+      skipTo: 2.15,
+      sub: { label: "Registration", tag: "Optional", href: "" }},
+    { label: "Cellpose training",
+      img: "",
+      href: "",
+    },
+    { label: "Bulk Segmentation",
+      img: "",
+      href: "" ,
+      sub: { label: "Merge Masks", tag: "Optional", href: "" }
+
+},
+    { label: "Space Ranger",
+      img: "",
+      href: "" ,
+      sub: { label: "Skip SpaceRanger", tag: "Quicker!", href: "" }
+    }
+
+  ]
+};
+var Process = {
+  id:        "pipeline-process",
+  title:     "VisHD-Processing",
+  titleHref: "xen.html",
+  steps: [
+    { label: "QC",
+      img: "assets/index-ims/qc_panel.png",
+      href: ""},
+    { label: "Normalisation",
+      img: "assets/index-ims/normalisation.png",
+      href: "",
+    },
+    { label: "Clustering",
+      img: "assets/index-ims/clustering.png",
+      href: ""
+    },
+    { label: "Annotation",
+      img: "assets/index-ims/annotation.png",
+      href: "" ,
+      sub: { label: "Single Cell Ref", tag: "Quicker!", href: "" }
+    }
+  ]
+};
+var Spatial = {
+  id:        "pipeline-spatial",
+  title:     "VisHD-Spatial",
+  titleHref: "xen.html",
+  steps: [
+    { label: "Density & Distance",
+      img: "assets/index-ims/density.png",
+      href: ""},
+
+    { label: "Niche Analysis",
+      img: "assets/index-ims/lisaclust.png",
+      href: "https://sydneybiox.github.io/lisaClust/articles/lisaClust.html"},
+    { label: "Neighborhood Analysis",
+      img: "assets/index-ims/spicyr.png",
+      href: "https://doi.org/10.1093/bioinformatics/btac268" },
+    { label: "SpatioMark",
+      img: "assets/index-ims/spatiomark.png",
+      href: "https://academic.oup.com/bioinformatics/article/41/8/btaf409/8205670" },
+
+    { label: "svg",
+      img: "assets/index-ims/svg.png",
+      href: "https://www.nature.com/articles/s41467-023-39748-z"}
+  ]
+};
+</script>

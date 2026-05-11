@@ -1,0 +1,68 @@
+<script>
+var VisImProc = {
+  id:        "pipeline-improc",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
+  steps: [
+    { label: "Tissue Detection",
+      img: "assets/index-ims/tissue-detection.png",
+      href: "" },
+    { label: "Image Registration",
+      img: "assets/index-ims/registration.png",
+      href: "",
+      sub: { label: "Fluorescent Microscopy", tag: "Optional", href: "" } },
+    { label: "Compartmentalisation",
+      img: "assets/index-ims/compartment.png",
+      href: ""},
+    { label: "Cell Identification",
+      img: "assets/index-ims/cell-id.png",
+      href: "" }
+  ]
+};
+
+var VisiumProcess = {
+  id:        "pipeline-process",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
+  steps: [
+    { label: "QC",
+      img: "assets/index-ims/qc_panel.png",
+      href: "" },
+    { label: "Normalisation",
+      img: "assets/index-ims/normalisation.png",
+      href: "" },
+    { label: "Clustering",
+      img: "assets/index-ims/clustering.png",
+      href: "" },
+    { label: "Annotation",
+      img: "assets/index-ims/annotation.png",
+      href: "",
+      sub: { label: "Single Cell Ref", tag: "Quicker!", href: "" } }
+  ]
+};
+
+var VisiumSpatial = {
+  id:        "pipeline-spatial",
+  title:     "Visium spatial pipeline",
+  titleHref: "visium.html",
+  steps: [
+    { label: "Deconvolution",
+      img: "assets/index-ims/deconvolution.png",
+      href: "",
+      sub: { label: "Single Cell Ref", tag: "Required", href: "" } },
+    { label: "SVG",
+      img: "assets/index-ims/svg.png",
+      href: "https://www.nature.com/articles/s41467-023-39748-z" },
+    { label: "Domain Analysis",
+      img: "assets/index-ims/lisaclust.png",
+      href: "" },
+    { label: "Diff. Expression",
+      img: "assets/index-ims/de.png",
+      href: "" },
+    { label: "Pathway Analysis",
+      img: "assets/index-ims/module.png",
+      href: "" ,
+      sub:{label: "Module Scoring", tag: "Optional", href: ""}}
+  ]
+};
+</script>
